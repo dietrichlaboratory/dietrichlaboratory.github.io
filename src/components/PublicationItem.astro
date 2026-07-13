@@ -1,0 +1,187 @@
+---
+import Icon from './Icon.astro';
+import { PILLAR_SHORT } from '../data/site';
+
+interface Pub {
+  title: string;
+  authors: string;
+  journal: string;
+  year: number;
+  citation?: string;
+  doi?: string;
+  url?: string;
+  pillar: string;
+  role?: string;
+  section?: string;
+  type?: string;
+  note?: string;
+}
+interface Props {
+  pub: Pub;
+  compact?: boolean;
+}
+const { pub, compact = false } = Astro.props;
+
+const pillarColor: Record<string, string> = {
+  developmental: 'var(--pillar-1)',
+  physiology: 'var(--pillar-2)',
+  comparative: 'var(--pillar-3)',
+  methods: 'var(--pillar-methods)',
+  review: 'var(--pillar-review)',
+};
+const color = pillarColor[pub.pillar] ?? 'var(--accent-blue)';
+const href = pub.url ?? (pub.doi ? `https://doi.org/${pub.doi}` : undefined);
+
+// Split authors so "Dietrich MO" can be emphasized without raw HTML injection.
+const authorParts = pub.authors.split('Dietrich MO');
+
+const roleLabel: Record<string, string> = {
+  first: 'First author',
+  senior: 'Senior author',
+  'co-senior': 'Co-senior author',
+};
+const showRole = pub.role && roleLabel[pub.role];
+const typeLabel =
+  pub.type && pub.type !== 'article' ? pub.type : undefined;
+---
+
+<li
+  class:list={['pub', { 'pub--compact': compact }]}
+  data-pillar={pub.pillar}
+  data-year={pub.year}
+  data-section={pub.section ?? 'independent'}
+>
+  <div class="pub__meta">
+    <span class="tag" style={`--tag-color:${color}`}>{PILLAR_SHORT[pub.pillar] ?? pub.pillar}</span>
+    <span class="pub__year">{pub.year}</span>
+    {typeLabel && <span class="pub__type">{typeLabel}</span>}
+    {showRole && <span class="pub__role">{roleLabel[pub.role!]}</span>}
+  </div>
+
+  <h3 class="pub__title">
+    {
+      href ? (
+        <a href={href} target="_blank" rel="noopener">
+          {pub.title}
+          <Icon name="external" class="pub__ext" />
+          <span class="visually-hidden"> (opens in new tab)</span>
+        </a>
+      ) : (
+        pub.title
+      )
+    }
+  </h3>
+
+  {
+    !compact && (
+      <p class="pub__authors">
+        {authorParts.map((seg, i) => (
+          <>
+            {i > 0 && <strong class="pub__me">Dietrich MO</strong>}
+            {seg}
+          </>
+        ))}
+      </p>
+    )
+  }
+
+  <p class="pub__source">
+    <cite>{pub.journal}</cite>{pub.citation && <span class="pub__cite"> {pub.citation}</span>}
+    {
+      pub.doi && (
+        <>
+          {' · '}
+          <a class="pub__doi" href={`https://doi.org/${pub.doi}`} target="_blank" rel="noopener">
+            doi:{pub.doi}<span class="visually-hidden"> (opens in new tab)</span>
+          </a>
+        </>
+      )
+    }
+  </p>
+
+  {!compact && pub.note && <p class="pub__note">{pub.note}</p>}
+</li>
+
+<style>
+  .pub {
+    list-style: none;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .pub__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+  .pub__year {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--ink-3);
+    font-size: 0.9rem;
+  }
+  .pub__type {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 0.15em 0.6em;
+  }
+  .pub__role {
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-warm-text);
+    font-weight: 600;
+  }
+  .pub__title {
+    font-size: var(--step-1);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+  }
+  .pub__title a {
+    color: var(--ink);
+    text-decoration: none;
+    display: inline;
+  }
+  .pub__title a:hover { color: var(--yale-blue); }
+  /* Icon is rendered by a child component, so target it via :global so the
+     inline sizing actually applies (overriding the global svg{display:block}). */
+  .pub__title :global(.pub__ext) {
+    width: 0.7em;
+    height: 0.7em;
+    display: inline-block;
+    vertical-align: baseline;
+    margin-left: 0.2em;
+    color: var(--ink-3);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .pub__title a:hover :global(.pub__ext) { transform: translate(1px, -1px); color: var(--accent-blue); }
+  .pub__authors {
+    margin-top: 0.4rem;
+    color: var(--ink-2);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .pub__me { color: var(--yale-blue); font-weight: 700; }
+  .pub__source {
+    margin-top: 0.3rem;
+    font-size: 0.9rem;
+    color: var(--ink-3);
+  }
+  .pub__source cite { font-style: italic; color: var(--ink-2); font-weight: 500; }
+  .pub__doi { color: var(--ink-3); text-decoration: none; }
+  .pub__doi:hover { color: var(--accent-blue); text-decoration: underline; }
+  .pub__note {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    font-style: italic;
+  }
+  .pub--compact { padding: 0.9rem 0; }
+  .pub--compact .pub__title { font-size: var(--step-0); font-weight: 600; }
+</style>

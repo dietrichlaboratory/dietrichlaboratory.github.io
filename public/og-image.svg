@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Dietrich Lab — Laboratory of Physiology of Behavior">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#001a34"/>
+      <stop offset="0.6" stop-color="#00356b"/>
+      <stop offset="1" stop-color="#013d7a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.1" r="0.6">
+      <stop offset="0" stop-color="#5b9bd5" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#5b9bd5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- neural motif -->
+  <g stroke="#5b9bd5" stroke-width="1.5" opacity="0.35">
+    <line x1="120" y1="120" x2="320" y2="80"/>
+    <line x1="320" y1="80" x2="500" y2="180"/>
+    <line x1="500" y1="180" x2="720" y2="110"/>
+    <line x1="720" y1="110" x2="960" y2="200"/>
+    <line x1="120" y1="120" x2="220" y2="360"/>
+    <line x1="220" y1="360" x2="500" y2="180"/>
+    <line x1="960" y1="200" x2="1080" y2="420"/>
+    <line x1="220" y1="360" x2="420" y2="520"/>
+  </g>
+  <g fill="#eaf3ff" opacity="0.9">
+    <circle cx="120" cy="120" r="7"/>
+    <circle cx="320" cy="80" r="5"/>
+    <circle cx="500" cy="180" r="8"/>
+    <circle cx="720" cy="110" r="5"/>
+    <circle cx="960" cy="200" r="7"/>
+    <circle cx="220" cy="360" r="6"/>
+    <circle cx="1080" cy="420" r="5"/>
+    <circle cx="420" cy="520" r="6"/>
+  </g>
+
+  <text x="90" y="360" font-family="Georgia, 'Times New Roman', serif" font-size="104" font-weight="700" fill="#ffffff">Dietrich Lab</text>
+  <text x="94" y="430" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-style="italic" fill="#9fc7ef">Laboratory of Physiology of Behavior</text>
+  <text x="96" y="520" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#cfe0f2">Yale School of Medicine · Department of Comparative Medicine</text>
+</svg>

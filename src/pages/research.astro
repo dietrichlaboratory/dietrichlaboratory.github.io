@@ -1,0 +1,377 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PlaceholderImage from '../components/PlaceholderImage.astro';
+import PublicationItem from '../components/PublicationItem.astro';
+import Reveal from '../components/Reveal.astro';
+import Icon from '../components/Icon.astro';
+
+const allPubs = (await getCollection('publications')).map((p) => p.data);
+const byPillar = (key: string) =>
+  allPubs.filter((p) => p.pillar === key).sort((a, b) => b.year - a.year);
+
+// Section content. Public-facing summaries paraphrased from the lab's work;
+// unpublished specifics are kept high-level. [PLACEHOLDER] marks items to fill.
+const sections = [
+  {
+    key: 'developmental',
+    number: '01',
+    kicker: 'Primary focus',
+    title: 'Developmental Neuroscience',
+    accent: 'var(--pillar-1)',
+    backdrop: 'neurons' as const,
+    skim: {
+      question: 'How does the developing brain build the circuits that generate social behavior?',
+      matters: 'The circuits wired in infancy and adolescence shape social and emotional health for the rest of life.',
+    },
+    figure: {
+      src: '/images/research/agrp-social-isolation.jpg',
+      alt: 'AgRP neurons (red) in the mouse hypothalamus around the third ventricle, with activity-labeled cells (white) after early-life social isolation.',
+      caption: 'AgRP neurons in the hypothalamus, labeled after early-life social isolation.',
+      position: 'center 60%',
+    },
+    paras: [
+      'The developing brain must assemble brain circuits that generate social behavior, and these circuits are surprisingly dynamic. We study how the young brain builds and re-tunes neural circuits across two sensitive windows: infancy, when an animal is fully dependent on a caregiver, and adolescence, when relationships with peers can shape mental and physical health for years to come.',
+      'A recurring theme is that social behavior is regulated much like hunger or thirst — all needs that are regulated by the brain. When young animals are deprived of social contact, the brain registers a state of social need and boosts the drive to reconnect.',
+      'Across these projects we treat behavior as a developmental phenomenon: the same brain circuit can mean different things at different ages.',
+    ],
+    techniques: ['Fiber photometry in pups & juveniles', 'Two-photon microendoscopy (GRIN lens)', 'Optogenetics & chemogenetics', 'Whole-brain Fos mapping & viral tracing', 'Activity-dependent neuronal tagging (TRAP)', 'Ultrasonic-vocalization analysis (VocalMat, SqueakOut)'],
+  },
+  {
+    key: 'physiology',
+    number: '02',
+    kicker: 'Body–brain & immunity',
+    title: 'Body–Brain Physiology & Neuroimmunology',
+    accent: 'var(--pillar-2)',
+    backdrop: 'cells' as const,
+    skim: {
+      question: 'How does the body signal to the brain to shape physiology and behavior?',
+      matters: 'Seeing conditions like food allergy as brain problems, not only immune problems, opens new ways to understand and treat them.',
+    },
+    figure: {
+      src: '/images/research/gut-mast-cells.jpg',
+      alt: 'Fluorescent mast cells (green) studding the villi of the mouse small intestine, imaged in a mast-cell reporter mouse.',
+      caption: 'Mast cells (green) throughout the villi of the small intestine — immune sentinels of the gut — imaged in a mast-cell reporter mouse.',
+      position: 'center',
+    },
+    paras: [
+      'The brain does not act in isolation: peripheral organs and the immune system continuously signal to the brain, which reads those signals and coordinates physiology and behavior. We study this two-way conversation — the body–brain axis and the dialogue between immunity and the nervous system.',
+      'A central project asks how the brain participates in food allergy. We are currently dissecting how allergen detection in the gut is relayed to the brain, focusing on hindbrain hubs that turn an allergic reaction into a coordinated, whole-body response.',
+      'A complementary line asks how metabolic state — and the circuits that represent hunger and satiety — can reprogram long-lived, tissue-resident immune cells, and how early-life experience shapes the brain’s opioid and stress systems. The unifying question is how signals originating in the body are read by the brain and translated into physiology and behavior.',
+    ],
+    techniques: ['Mouse models of food allergy', 'Gut-compartment & vagal/spinal pathway manipulation', 'Two-photon imaging of hindbrain neurons', 'Activity-dependent labeling (Fos/TRAP) & chemogenetics', 'Multiplexed in situ hybridization', 'Tissue clearing & light-sheet imaging'],
+  },
+  {
+    key: 'comparative',
+    number: '03',
+    kicker: 'Armadillo model · reproduction & individuality',
+    title: 'Comparative Biology',
+    accent: 'var(--pillar-3)',
+    backdrop: 'wave' as const,
+    skim: {
+      question: 'What can an extraordinary mammal teach us about how life begins?',
+      matters: 'Armadillo diapause and identical quadruplets illuminate human reproduction, quiescence, and the origins of individuality.',
+    },
+    figure: {
+      src: '/images/armadillo/armadillo-portrait.jpg',
+      alt: 'A nine-banded armadillo (Dasypus novemcinctus) in the Dietrich Lab research colony at Yale.',
+      caption: 'A nine-banded armadillo in the lab’s research colony.',
+      position: 'center 18%',
+    },
+    paras: [
+      'The classic Krogh principle states that some questions can only be answered in the right organism. To this end, we have spent more than a decade establishing the nine-banded armadillo (Dasypus novemcinctus) as a modern research model in Yale’s Department of Comparative Medicine — home to what we believe is the only academic armadillo research colony of its kind. A member of the ancient Xenarthra lineage, the armadillo has two extraordinary features that make it a rare window into how life begins:',
+      '1. Reproduction and suspended development. Like many mammals, the armadillo can pause its pregnancy through embryonic diapause (delayed implantation) — but it does so to an extreme found nowhere else, holding an early embryo in a suspended state for years. We study how development is halted and later reawakened, and the molecular signals from the embryo, uterus, ovaries, and nervous system that place life on hold. These mechanisms bear on human reproductive challenges such as infertility and pregnancy loss, and on broader questions of cellular dormancy and aging.',
+      '2. The origins of individuality. The armadillo always gives birth to genetically identical quadruplets: a single fertilized egg reliably splits into four embryos (obligate polyembryony), essentially unique among mammals. This provides a natural experiment to test how four individuals arise from one genome. We probe this question with single-cell and spatial genomics, epigenomics, lineage tracing, and stem-cell models, with implications reaching into stem-cell biology and the neurobiology of individuality.',
+    ],
+    techniques: ['Single-cell & spatial transcriptomics', 'Epigenomic profiling (ATAC-seq, ChIP-seq)', 'Whole-genome sequencing & lineage tracing', 'Embryonic & induced pluripotent stem cells', 'In vitro implantation & twinning models', 'Uterine-fluid proteomics & metabolomics'],
+  },
+];
+---
+
+<BaseLayout
+  title="Research"
+  description="Three connected research pillars: developmental neuroscience, body–brain physiology and neuroimmunology, and comparative biology (armadillo reproduction and individuality)."
+>
+  <PageHeader
+    eyebrow="Research"
+    title="What we study"
+    intro="Our science spans three connected pillars — from the neural circuits that build social behavior in early life, to how the body and immune system communicates with the brain, to what an extraordinary mammal can reveal about reproduction and individuality."
+    backdrop="neurons"
+  />
+
+  <nav class="research-toc" aria-label="Research areas">
+    <div class="container research-toc__inner">
+      {
+        sections.map((s) => (
+          <a href={`#${s.key}`} style={`--accent:${s.accent}`}>
+            <span class="research-toc__num">{s.number}</span>
+            {s.title}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+
+  {
+    sections.map((s, i) => {
+      const pubs = byPillar(s.key);
+      const shown = pubs.slice(0, 5);
+      return (
+        <section
+          class:list={['section', 'pillar-section', { 'section--alt': i % 2 === 1 }]}
+          id={s.key}
+          style={`--accent:${s.accent}`}
+          aria-labelledby={`${s.key}-title`}
+        >
+          <div class="container">
+            <div class:list={['pillar-section__grid', { 'is-reversed': i % 2 === 1 }]}>
+              <div class="pillar-section__text">
+                <Reveal as="p" class="eyebrow">
+                  {s.number} · {s.kicker}
+                </Reveal>
+                <Reveal as="h2" delay={60} id={`${s.key}-title`}>
+                  {s.title}
+                </Reveal>
+                <Reveal class="pillar-skim" delay={90}>
+                  <div class="pillar-skim__item">
+                    <span class="pillar-skim__label">Big question</span>
+                    <p class="pillar-skim__text">{s.skim.question}</p>
+                  </div>
+                  <div class="pillar-skim__item">
+                    <span class="pillar-skim__label">Why it matters</span>
+                    <p class="pillar-skim__text">{s.skim.matters}</p>
+                  </div>
+                </Reveal>
+                <div class="pillar-section__prose stack" data-reveal style="--reveal-delay:120ms">
+                  {s.paras.map((p) => <p>{p}</p>)}
+                </div>
+
+                <Reveal class="pillar-section__tech" delay={60}>
+                  <h3 class="micro-head">Key techniques</h3>
+                  <ul class="chips">
+                    {s.techniques.map((t) => <li class="chip">{t}</li>)}
+                  </ul>
+                </Reveal>
+              </div>
+
+              <Reveal class="pillar-section__figure" variant={i % 2 === 1 ? 'right' : 'left'} delay={120}>
+                {
+                  s.figure.src ? (
+                    <figure class="pillar-figure">
+                      <div class="pillar-figure__frame" style={`--obj-pos:${s.figure.position ?? 'center'}; --frame-ratio:${s.figure.ratio ?? '4 / 3'}`}>
+                        <img src={s.figure.src} alt={s.figure.alt} loading="lazy" decoding="async" />
+                      </div>
+                      {s.figure.caption && (
+                        <figcaption class="pillar-figure__cap muted">{s.figure.caption}</figcaption>
+                      )}
+                    </figure>
+                  ) : (
+                    <PlaceholderImage label={s.figure.label} dims={s.figure.dims} ratio="4 / 3" duotone />
+                  )
+                }
+              </Reveal>
+            </div>
+
+            {shown.length > 0 && (
+              <Reveal class="pillar-section__pubs" delay={60}>
+                <div class="pillar-section__pubs-head">
+                  <h3 class="micro-head">Selected publications</h3>
+                  <a class="link-arrow" href={`/publications?filter=${s.key}`}>
+                    All {pubs.length} in this area <Icon name="arrow-right" />
+                  </a>
+                </div>
+                <ul class="pub-list">
+                  {shown.map((pub) => <PublicationItem pub={pub} />)}
+                </ul>
+              </Reveal>
+            )}
+          </div>
+        </section>
+      );
+    })
+  }
+
+  <section class="section section--alt" aria-labelledby="tools-title">
+    <div class="container">
+      <div class="tools-band">
+        <div>
+          <Reveal as="p" class="eyebrow">Methods &amp; tools</Reveal>
+          <Reveal as="h2" delay={60} id="tools-title">Open tools we build</Reveal>
+          <Reveal as="p" class="measure" delay={120}>
+            We build and share the tools our science needs —
+            including <strong>VocalMat</strong>, an open framework for detecting
+            and classifying mouse ultrasonic vocalizations.
+          </Reveal>
+        </div>
+        <Reveal delay={120}>
+          <a class="btn btn--ghost" href="/vocalmat">
+            Explore VocalMat <Icon name="arrow-right" />
+          </a>
+        </Reveal>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Skim-friendly per-pillar callout (Big question / Why it matters). */
+  .pillar-skim {
+    display: grid;
+    gap: 0.9rem 1.5rem;
+    margin: 1.25rem 0 0.35rem;
+    padding: 1.05rem 1.25rem;
+    background: var(--surface-tint);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  @media (min-width: 34rem) {
+    .pillar-skim { grid-template-columns: 1fr 1fr; }
+  }
+  .pillar-skim__label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+  }
+  .pillar-skim__text { font-size: 0.95rem; line-height: 1.45; color: var(--ink); }
+
+  .tools-band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+  }
+  .tools-band h2 { font-size: var(--step-2); margin: 0.3rem 0 0.5rem; }
+  .tools-band p.measure { color: var(--ink-2); }
+
+  .research-toc {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .research-toc__inner {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    padding-block: 0.7rem;
+    scrollbar-width: thin;
+  }
+  .research-toc a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    text-decoration: none;
+    border: 1px solid var(--line);
+    transition: color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), background-color var(--dur-2) var(--ease);
+  }
+  .research-toc a:hover {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+  }
+  .research-toc__num { color: var(--accent); font-family: var(--font-serif); }
+
+  .pillar-section { scroll-margin-top: calc(var(--header-h) + 3.5rem); }
+  .pillar-section__grid {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 3vw, 3.5rem);
+    align-items: start;
+  }
+  @media (min-width: 52rem) {
+    .pillar-section__grid { grid-template-columns: 1.15fr 0.85fr; }
+    /* Reversed sections swap column widths too, so the figure always sits in
+       the narrower column (matching the other pillars) and text keeps the wide one. */
+    .pillar-section__grid.is-reversed { grid-template-columns: 0.85fr 1.15fr; }
+    .pillar-section__grid.is-reversed .pillar-section__text { order: 2; }
+    .pillar-section__grid.is-reversed .pillar-section__figure { order: 1; }
+    .pillar-section__figure { position: sticky; top: calc(var(--header-h) + 4rem); }
+  }
+  .pillar-section .eyebrow { color: var(--accent); }
+  .pillar-section h2 {
+    margin-top: 0.4rem;
+    border-left: 4px solid var(--accent);
+    padding-left: 0.8rem;
+    margin-left: -0.8rem;
+  }
+  .pillar-section__prose { margin-top: 1.2rem; color: var(--ink-2); }
+  .pillar-section__prose :global(p) { line-height: var(--leading-body); }
+
+  /* Real research figures */
+  .pillar-figure { margin: 0; }
+  .pillar-figure__frame {
+    aspect-ratio: var(--frame-ratio, 4 / 3);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    background: var(--yale-blue-900);
+  }
+  .pillar-figure__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--obj-pos, center);
+  }
+  .pillar-figure__cap { margin-top: 0.6rem; font-size: 0.85rem; line-height: 1.45; }
+
+  .embryo-strip { margin-top: clamp(2rem, 1.5rem + 2vw, 3rem); }
+  .embryo-figure { margin: 0; text-align: center; }
+  .embryo-figure video {
+    max-width: min(100%, 34rem);
+    width: 100%;
+    height: auto;
+    display: inline-block;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .embryo-figure__cap { margin-top: 0.7rem; font-size: 0.85rem; }
+
+  .micro-head {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 700;
+  }
+  .pillar-section__tech { margin-top: 2rem; }
+  .chips { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; margin-top: 0.8rem; }
+  .chip {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.4em 0.85em;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+    color: color-mix(in srgb, var(--accent) 75%, var(--ink));
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  .pillar-section__pubs { margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .pillar-section__pubs-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  }
+  .pillar-section__pubs .pub-list { padding: 0; }
+  .pillar-section__pubs .pub-list :global(.pub:last-child) { border-bottom: none; }
+  .pub-list { list-style: none; padding: 0; margin: 0; }
+</style>

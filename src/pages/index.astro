@@ -1,0 +1,165 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import PillarBlobs from '../components/PillarBlobs.astro';
+import PublicationItem from '../components/PublicationItem.astro';
+import Reveal from '../components/Reveal.astro';
+import Icon from '../components/Icon.astro';
+import { PILLARS, ADDRESS } from '../data/site';
+
+// Latest publications for the homepage strip (reverse-chronological).
+const allPubs = await getCollection('publications');
+const latest = allPubs
+  .map((p) => p.data)
+  .sort((a, b) => b.year - a.year)
+  .slice(0, 5);
+
+// Per-pillar homepage content: short circle label + anchor examples.
+const pillarExtras: Record<string, { short: string; examples: string[] }> = {
+  developmental: {
+    short: 'Development',
+    examples: [
+      'Neurons repurposed to regulate age-specific needs in infancy and adolescence',
+      'Neural coding that represents a parent and soothes infant distress',
+      'Response of the developing brain to separation and trauma',
+    ],
+  },
+  physiology: {
+    short: 'Integrative Physiology',
+    examples: [
+      'Immune sensing of food allergens that modify behavior',
+      'Gut–brain circuits that turn an allergic reaction into a whole-body response',
+      'How metabolic state reprograms tissue-resident immune cells',
+    ],
+  },
+  comparative: {
+    short: 'Comparative Biology',
+    examples: [
+      'Embryonic diapause: pausing mammalian development and aging for years',
+      'Obligate polyembryony: one fertilized egg, four genetically identical offspring',
+      'The origins of individuality from identical genomes',
+    ],
+  },
+};
+
+// Build the (equally weighted) pillar list for the interactive orb cluster.
+const orbPillars = PILLARS.map((p) => ({
+  key: p.key,
+  title: p.title,
+  short: pillarExtras[p.key].short,
+  summary: p.summary,
+  accent: p.accent,
+  examples: pillarExtras[p.key].examples,
+  href: `/research#${p.key}`,
+}));
+---
+
+<BaseLayout>
+  <Hero />
+
+  <!-- ================= Research pillars ================= -->
+  <section class="section" id="pillars" aria-labelledby="pillars-title">
+    <div class="container">
+      <div class="section-head center mx-auto">
+        <Reveal as="h2" id="pillars-title">What we study</Reveal>
+      </div>
+
+      <Reveal delay={120}>
+        <PillarBlobs pillars={orbPillars} />
+      </Reveal>
+    </div>
+  </section>
+
+  <!-- ================= Latest publications ================= -->
+  <section class="section section--alt" id="latest" aria-labelledby="latest-title">
+    <div class="container">
+      <div class="latest-head">
+        <div class="section-head" style="margin-bottom:0">
+          <Reveal as="p" class="eyebrow">From the lab</Reveal>
+          <Reveal as="h2" delay={60} id="latest-title">Latest publications</Reveal>
+        </div>
+        <Reveal delay={120}>
+          <a class="btn btn--ghost" href="/publications">
+            All publications <Icon name="arrow-right" />
+          </a>
+        </Reveal>
+      </div>
+
+      <Reveal delay={80}>
+        <ul class="pub-list card latest-list">
+          {latest.map((pub) => <PublicationItem pub={pub} compact />)}
+        </ul>
+      </Reveal>
+    </div>
+  </section>
+
+  <!-- ================= Location / CTA ================= -->
+  <section class="section section--navy" aria-labelledby="visit-title">
+    <div class="container visit-grid">
+      <Reveal>
+        <p class="eyebrow">Find us</p>
+        <h2 id="visit-title">Come do science with us</h2>
+        <p class="lead" style="color:#cfe0f2">
+          We are based at Yale School of Medicine in New Haven, Connecticut, and
+          we are actively recruiting curious scientists.
+        </p>
+        <div class="visit-cta">
+          <a class="btn btn--primary" href="/join" style="background:#fff;color:var(--yale-blue)">
+            Join the lab
+          </a>
+          <a class="btn btn--ghost" href="/contact">Contact <Icon name="arrow-right" /></a>
+        </div>
+      </Reveal>
+
+      <Reveal delay={120}>
+        <address class="visit-card">
+          <Icon name="map-pin" size="1.5rem" />
+          <span>
+            <strong>{ADDRESS.institution}</strong><br />
+            {ADDRESS.building}<br />
+            {ADDRESS.street}<br />
+            {ADDRESS.city}, {ADDRESS.state}
+          </span>
+        </address>
+      </Reveal>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .latest-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+  .latest-list { padding: 0.5rem 1.5rem; }
+  .latest-list :global(.pub:last-child) { border-bottom: none; }
+
+  .visit-grid {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 3vw, 3rem);
+    align-items: center;
+  }
+  @media (min-width: 46rem) {
+    .visit-grid { grid-template-columns: 1.3fr 1fr; }
+  }
+  .visit-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.6rem; }
+  .visit-card {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    font-style: normal;
+    line-height: 1.7;
+    color: #dce9f7;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+  .visit-card :global(svg) { color: var(--accent-sky); flex: none; margin-top: 0.15rem; }
+  .visit-card strong { color: #fff; }
+</style>

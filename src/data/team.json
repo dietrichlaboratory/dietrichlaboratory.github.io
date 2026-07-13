@@ -1,0 +1,105 @@
+[
+  {
+    "id": "marcelo-dietrich",
+    "name": "Marcelo O. Dietrich, MD, PhD",
+    "role": "Principal Investigator · Professor of Comparative Medicine & Neuroscience",
+    "group": "pi",
+    "order": 0,
+    "bio": "Marcelo Dietrich is Professor of Comparative Medicine and of Neuroscience at Yale School of Medicine and the Robert T. McCloskey Scholar. Trained as a physician and biochemist, he leads the Laboratory of Physiology of Behavior, which studies how the brain and body communicate to shape behavior and health across the lifespan — from the neural circuits that build social behavior in early life, to body–brain and immune signaling, to the comparative biology of the nine-banded armadillo. He is also a member of Yale’s Wu Tsai Institute, contributing to its Center for Neurocognition & Behavior and Center for Neurodevelopment & Plasticity.",
+    "photo": "/images/team/marcelo-dietrich.jpg",
+    "email": "marcelo.dietrich@yale.edu",
+    "links": {
+      "scholar": "https://scholar.google.com/citations?user=z3vKy74AAAAJ&hl=en",
+      "orcid": "https://orcid.org/0000-0001-9781-2221",
+      "linkedin": "https://www.linkedin.com/in/marcelo-dietrich-a8a03328/",
+      "yale": "https://medicine.yale.edu/profile/marcelo-dietrich/"
+    }
+  },
+  {
+    "id": "marcelo-zimmer",
+    "name": "Marcelo R. Zimmer, PhD",
+    "role": "Associate Research Scientist",
+    "group": "staff",
+    "order": 10,
+    "photo": "/images/team/marcelo-zimmer.jpg",
+    "links": { "yale": "https://medicine.yale.edu/profile/marcelo-zimmer/", "linkedin": "https://www.linkedin.com/in/marcelorzimmer/" }
+  },
+  {
+    "id": "jeremy-bober",
+    "name": "Jeremy Bober",
+    "role": "Research Associate",
+    "group": "staff",
+    "order": 11,
+    "photo": "/images/team/jeremy-bober.jpg",
+    "links": { "yale": "https://medicine.yale.edu/profile/jeremy-bober/" }
+  },
+  {
+    "id": "zhongwu-liu",
+    "name": "Zhongwu Liu",
+    "role": "Adjunct Assistant Professor",
+    "group": "staff",
+    "order": 12,
+    "photo": "/images/team/zhongwu-liu.jpg",
+    "links": { "linkedin": "https://www.linkedin.com/in/zhong-wu-liu-63b3b629/" }
+  },
+  {
+    "id": "shuting-yang",
+    "name": "Shuting Yang",
+    "role": "Postgraduate Associate",
+    "group": "staff",
+    "order": 13,
+    "photo": "/images/team/shuting-yang.jpg",
+    "links": { "yale": "https://medicine.yale.edu/profile/shuting-yang/" }
+  },
+  {
+    "id": "hector-haddock-martinez",
+    "name": "Hector Haddock-Martinez",
+    "role": "PhD Student (INP)",
+    "group": "grad",
+    "order": 20,
+    "photo": "/images/team/hector-haddock-martinez.jpg"
+  },
+  {
+    "id": "anouk-corstens",
+    "name": "Anouk Corstens",
+    "role": "M.Sc. Student",
+    "group": "grad",
+    "order": 21,
+    "photo": "/images/team/anouk-corstens.jpg",
+    "links": { "linkedin": "https://www.linkedin.com/in/anouk-corstens-20803b197/" }
+  },
+  {
+    "id": "jorge-santeli",
+    "name": "Jorge V. Santeli",
+    "role": "Visiting PhD Student",
+    "group": "grad",
+    "order": 22,
+    "photo": "/images/team/jorge-santeli.jpg"
+  },
+  {
+    "id": "nathan-lange",
+    "name": "Nathan Lange",
+    "role": "Undergraduate Researcher, Yale College",
+    "group": "student",
+    "order": 30,
+    "photo": "/images/team/nathan-lange.jpg",
+    "links": { "linkedin": "https://www.linkedin.com/in/nathaniel-lange-a3085031a/" }
+  },
+  {
+    "id": "morgan-goldstrom",
+    "name": "Morgan Goldstrom",
+    "role": "Undergraduate Researcher, Yale College",
+    "group": "student",
+    "order": 31,
+    "photo": "/images/team/morgan-goldstrom.jpg",
+    "links": { "linkedin": "https://www.linkedin.com/in/morgan-goldstrom-a5543033b/" }
+  },
+  {
+    "id": "gabriel-ioshpe",
+    "name": "Gabriel Ioshpe",
+    "role": "Visiting High-School Student",
+    "group": "student",
+    "order": 32,
+    "photo": "/images/team/gabriel-ioshpe.jpg"
+  }
+]

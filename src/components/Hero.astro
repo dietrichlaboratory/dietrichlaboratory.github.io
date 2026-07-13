@@ -1,0 +1,171 @@
+---
+import { SITE } from '../data/site';
+import SciBackdrop from './SciBackdrop.astro';
+import Icon from './Icon.astro';
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <!-- Full-bleed hero imagery: confocal image of AgRP neurons (real lab data). -->
+  <div
+    class="hero__photo"
+    data-parallax
+    data-parallax-speed="0.06"
+    role="img"
+    aria-label="Confocal microscopy of AgRP neurons in the mouse hypothalamus"
+  ></div>
+  <div class="hero__scrim"></div>
+  <div class="hero__bg" data-parallax data-parallax-speed="0.12">
+    <SciBackdrop variant="neurons" />
+  </div>
+  <div class="hero__glow" data-parallax data-parallax-speed="0.05"></div>
+
+  <div class="container hero__inner">
+    <p class="eyebrow" data-reveal>
+      Yale School of Medicine
+    </p>
+    <h1 id="hero-title" class="hero__title" data-reveal style="--reveal-delay:60ms">
+      Dietrich Lab
+    </h1>
+    <p class="hero__tagline" data-reveal style="--reveal-delay:120ms">
+      {SITE.tagline}
+    </p>
+    <p class="hero__mission" data-reveal style="--reveal-delay:200ms">
+      {SITE.mission}
+    </p>
+    <div class="hero__cta" data-reveal style="--reveal-delay:280ms">
+      <a class="btn btn--primary" href="/research">
+        Explore the research <Icon name="arrow-right" />
+      </a>
+      <a class="btn btn--ghost" href="/join">Join the lab</a>
+    </div>
+  </div>
+
+  <a class="hero__scroll" href="#pillars" aria-label="Scroll to research areas">
+    <span>What we study</span>
+    <Icon name="chevron-down" />
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: min(92vh, 54rem);
+    display: flex;
+    align-items: center;
+    padding-block: clamp(4rem, 3rem + 8vw, 8rem);
+    color: #eaf1f9;
+    background:
+      radial-gradient(120% 90% at 80% -10%, #0a4a8f 0%, transparent 55%),
+      linear-gradient(160deg, var(--yale-blue-900) 0%, var(--yale-blue) 60%, #013d7a 100%);
+  }
+  .hero__photo {
+    position: absolute;
+    inset: -8% 0 -4% 0;
+    z-index: -4;
+    background-image: url('/images/research/agrp-social-isolation.jpg');
+    background-size: cover;
+    background-position: center 55%;
+    opacity: 0.6;
+  }
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    background:
+      linear-gradient(90deg, rgba(0, 26, 52, 0.95) 0%, rgba(0, 26, 52, 0.72) 45%, rgba(0, 26, 52, 0.32) 100%),
+      linear-gradient(0deg, rgba(0, 26, 52, 0.9) 0%, rgba(0, 26, 52, 0.1) 55%);
+  }
+  .hero__bg {
+    position: absolute;
+    inset: -10% 0 0 0;
+    z-index: -2;
+    opacity: 0.4;
+  }
+  .hero__glow {
+    position: absolute;
+    z-index: -1;
+    top: -20%;
+    right: -10%;
+    width: 55vw;
+    height: 55vw;
+    max-width: 700px;
+    max-height: 700px;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--accent-sky) 55%, transparent),
+      transparent 62%
+    );
+    filter: blur(20px);
+    opacity: 0.5;
+  }
+
+  .hero__inner { position: relative; max-width: 46rem; }
+  .hero .eyebrow { color: var(--eyebrow-on-navy); }
+
+  .hero__title {
+    font-size: var(--step-5);
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+    margin-top: 0.6rem;
+    letter-spacing: -0.02em;
+  }
+  .hero__tagline {
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--accent-sky);
+    margin-top: 0.5rem;
+  }
+  .hero__mission {
+    font-size: var(--step-1);
+    line-height: 1.55;
+    color: #cfe0f2;
+    margin-top: 1.4rem;
+    max-width: 40ch;
+  }
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 2.2rem;
+  }
+  /* The default ghost button (Yale-blue on white) is invisible on the dark
+     hero — give the secondary CTA a light, clearly-visible outline while
+     keeping the solid primary button dominant. */
+  .hero__cta .btn--ghost {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .hero__cta .btn--ghost:hover {
+    color: #fff;
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 1.6rem;
+    transform: translateX(-50%);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    color: #bcd3ec;
+    text-decoration: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .hero__scroll:hover { color: #fff; }
+  .hero__scroll :global(svg) {
+    width: 1.4rem;
+    height: 1.4rem;
+    animation: bounce-down 1.8s var(--ease) infinite;
+  }
+</style>

@@ -1,0 +1,392 @@
+---
+// Interactive research cluster: three smaller morphing gradient "blobs" that
+// bounce around the stage (off the edges) in all directions. Each blob's label
+// lives INSIDE the morphing body (semi-transparent, embossed, squash-stretching)
+// so the text reads as part of the 3D surface. Hover/focus freezes that blob and
+// expands its area's panel below; it starts open and collapses when the pointer
+// leaves; click/tap pins. Without JS all panels show; motion respects
+// prefers-reduced-motion (no bounce, no morph).
+import Icon from './Icon.astro';
+
+interface Pillar {
+  key: string;
+  title: string;
+  short: string;
+  summary: string;
+  accent: string;
+  examples: string[];
+  href: string;
+}
+interface Props {
+  pillars: Pillar[];
+}
+const { pillars } = Astro.props;
+
+// Per-blob gradient stops (deep → mid → light) and starting placement (% of stage).
+const style: Record<string, { deep: string; mid: string; light: string; x: number; y: number }> = {
+  developmental: { deep: '#00356b', mid: '#1b52a0', light: '#2f6fd0', x: 5, y: 14 },
+  physiology: { deep: '#0f7d7d', mid: '#1c9791', light: '#35b0a6', x: 63, y: 8 },
+  comparative: { deep: '#9a6a2f', mid: '#b98139', light: '#d29a4a', x: 34, y: 46 },
+};
+const GRAIN =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
+---
+
+<div class="orbs">
+  <div class="orbs__stage" aria-label="Research areas">
+    {
+      pillars.map((p) => {
+        const s = style[p.key];
+        return (
+          <button
+            type="button"
+            id={`orb-${p.key}`}
+            class="orb"
+            data-pillar={p.key}
+            aria-expanded="false"
+            aria-controls={`panel-${p.key}`}
+            style={`--x:${s.x}%; --y:${s.y}%; --c-deep:${s.deep}; --c-mid:${s.mid}; --c-light:${s.light}`}
+          >
+            <span class="orb__body">
+              <span class="orb__color" aria-hidden="true" />
+              <span class="orb__sheen" aria-hidden="true" />
+              <span class="orb__label"><span class="orb__labeltext">{p.short}</span></span>
+              <span class="orb__grain" aria-hidden="true" style={`background-image:${GRAIN}`} />
+            </span>
+          </button>
+        );
+      })
+    }
+  </div>
+
+  <div class="orbs__panels">
+    <p class="orbs__hint" hidden>Hover or tap a shape to explore each area.</p>
+    {
+      pillars.map((p) => (
+        <div
+          class="orb-panel"
+          id={`panel-${p.key}`}
+          data-pillar={p.key}
+          role="region"
+          aria-labelledby={`orb-${p.key}`}
+          style={`--accent:${p.accent}`}
+        >
+          <h3 class="orb-panel__title">{p.title}</h3>
+          <p class="orb-panel__summary">{p.summary}</p>
+          <ul class="orb-panel__examples">
+            {p.examples.map((ex) => <li>{ex}</li>)}
+          </ul>
+          <a class="link-arrow" href={p.href}>
+            Explore this area <Icon name="arrow-right" />
+          </a>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .orbs { display: grid; gap: clamp(1.25rem, 0.8rem + 2.5vw, 2.5rem); }
+
+  /* ---- Stage: the "arena" the blobs bounce inside ---- */
+  .orbs__stage {
+    position: relative;
+    width: min(100%, 54rem);
+    margin-inline: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .orb {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: clamp(8.5rem, 40%, 13rem);
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    filter: drop-shadow(0 20px 34px rgba(20, 30, 50, 0.2));
+    transition: filter 0.4s ease; /* transform is driven per-frame by JS */
+    will-change: transform, filter;
+  }
+  .orb:nth-child(1) { z-index: 3; }
+  .orb:nth-child(2) { z-index: 2; }
+  .orb:nth-child(3) { z-index: 1; }
+
+  /* The morphing body — label rides along inside it */
+  .orb__body {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    box-shadow:
+      inset 0 0 60px rgba(255, 255, 255, 0.1),
+      inset -18px -22px 60px rgba(0, 0, 0, 0.28),
+      inset 22px 26px 70px rgba(255, 255, 255, 0.22);
+    transition: transform 0.5s var(--ease-out), border-radius 0.6s ease, box-shadow 0.6s ease;
+    will-change: border-radius;
+  }
+  .orb:nth-child(1) .orb__body { animation: morph 18s ease-in-out -1s infinite; }
+  .orb:nth-child(2) .orb__body { animation: morph 20s ease-in-out -6s infinite; }
+  .orb:nth-child(3) .orb__body { animation: morph 19s ease-in-out -11s infinite; }
+
+  .orb__color,
+  .orb__sheen,
+  .orb__grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .orb__color {
+    z-index: 1;
+    /* Translucent so the blobs read as glassy 3D objects and overlaps blend */
+    background: radial-gradient(120% 120% at 30% 24%,
+      color-mix(in srgb, var(--c-light) 80%, transparent) 0%,
+      color-mix(in srgb, var(--c-mid) 80%, transparent) 42%,
+      color-mix(in srgb, var(--c-deep) 82%, transparent) 100%);
+  }
+  .orb__sheen {
+    z-index: 2;
+    background: radial-gradient(50% 40% at 34% 26%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.12) 34%, rgba(255, 255, 255, 0) 62%);
+  }
+  .orb__grain {
+    z-index: 4;
+    opacity: 0.16;
+    mix-blend-mode: overlay;
+    background-size: 180px 180px;
+  }
+
+  .orb__label {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .orb__labeltext {
+    max-width: 12ch;
+    text-align: center;
+    text-wrap: balance;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(1rem, 0.72rem + 1.3vw, 1.4rem);
+    line-height: 1.16;
+    letter-spacing: 0.01em;
+    /* Text like a texture printed on the elastic surface: semi-transparent,
+       softly embossed, squash-stretching with the morph. */
+    color: rgba(255, 255, 255, 0.72);
+    text-shadow:
+      0 1px 1px rgba(0, 18, 40, 0.42),
+      0 -1px 1px rgba(255, 255, 255, 0.22);
+    transform-origin: center;
+    animation: texflex 13s ease-in-out infinite;
+    will-change: transform;
+  }
+  .orb:nth-child(1) .orb__labeltext { animation-duration: 13s; animation-delay: -1s; }
+  .orb:nth-child(2) .orb__labeltext { animation-duration: 15s; animation-delay: -5s; }
+  .orb:nth-child(3) .orb__labeltext { animation-duration: 14s; animation-delay: -8s; }
+  .orb:hover .orb__labeltext { animation-play-state: paused; }
+
+  /* Hover / open: brighten + bring forward (position is JS; scale is on the body
+     so it composes with the per-frame translate). */
+  .orb:hover,
+  .orb[aria-expanded='true'] {
+    filter: drop-shadow(0 30px 48px rgba(20, 30, 50, 0.32)) brightness(1.08) saturate(1.07);
+    z-index: 9;
+  }
+  .orb[aria-expanded='true'] .orb__body { transform: scale(1.04); }
+  /* The hovered blob steadies: freeze the morph to a calm shape and scale up */
+  .orb:hover .orb__body {
+    animation-play-state: paused;
+    transform: scale(1.06);
+    border-radius: 48% 52% 52% 48% / 49% 49% 51% 51%;
+    box-shadow:
+      inset 0 0 70px rgba(255, 255, 255, 0.16),
+      inset -14px -18px 55px rgba(0, 0, 0, 0.24),
+      inset 24px 28px 80px rgba(255, 255, 255, 0.3);
+  }
+  .orb:focus-visible { outline: none; }
+  .orb:focus-visible .orb__body {
+    box-shadow:
+      0 0 0 3px var(--focus),
+      inset 0 0 70px rgba(255, 255, 255, 0.16),
+      inset -14px -18px 55px rgba(0, 0, 0, 0.24),
+      inset 24px 28px 80px rgba(255, 255, 255, 0.3);
+  }
+
+  @keyframes morph {
+    0%   { border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; }
+    20%  { border-radius: 58% 42% 40% 60% / 55% 48% 52% 45%; }
+    40%  { border-radius: 39% 61% 55% 45% / 60% 39% 61% 40%; }
+    60%  { border-radius: 60% 40% 46% 54% / 38% 57% 43% 62%; }
+    80%  { border-radius: 47% 53% 62% 38% / 52% 62% 38% 48%; }
+    100% { border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; }
+  }
+  @keyframes texflex {
+    0%   { transform: scale(1, 1) skewX(0deg); }
+    25%  { transform: scale(1.055, 0.955) skewX(-1.6deg); }
+    50%  { transform: scale(0.965, 1.045) skewX(1deg); }
+    75%  { transform: scale(1.04, 0.975) skewX(1.6deg); }
+    100% { transform: scale(1, 1) skewX(0deg); }
+  }
+
+  /* ---- Panels ---- */
+  .orbs__panels { max-width: 46rem; margin-inline: auto; width: 100%; }
+  .orbs.is-enhanced .orbs__panels {
+    min-height: clamp(15rem, 12rem + 8vw, 18rem);
+    display: grid;
+    align-content: center;
+  }
+  .orbs__hint { text-align: center; color: var(--ink-3); font-style: italic; }
+  .orb-panel { border-top: 3px solid var(--accent); padding-top: 1.4rem; }
+  .orb-panel:focus-visible { outline: 3px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
+  .orb-panel__title { color: var(--ink); font-size: var(--step-2); }
+  .orb-panel__summary { color: var(--ink-2); margin-top: 0.6rem; max-width: 60ch; }
+  .orb-panel__examples { list-style: none; padding: 0; margin: 1.1rem 0 1.3rem; display: grid; gap: 0.55rem; }
+  .orb-panel__examples li { position: relative; padding-left: 1.4rem; color: var(--ink-2); font-size: 0.96rem; line-height: 1.45; }
+  .orb-panel__examples li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--accent); }
+  .orb-panel .link-arrow { color: var(--accent); }
+
+  .orb-panel + .orb-panel { margin-top: 2rem; }
+  .orbs.is-enhanced .orb-panel + .orb-panel { margin-top: 0; }
+  .orb-panel.is-in { animation: panel-in var(--dur-3) var(--ease-out); }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(0.6rem); } to { opacity: 1; transform: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orb__body { animation: none !important; border-radius: 46% 54% 55% 45% / 48% 47% 53% 52%; }
+    .orb__labeltext { animation: none !important; }
+    .orb-panel.is-in { animation: none; }
+  }
+
+  @media (max-width: 34rem) {
+    .orbs__stage { aspect-ratio: 1 / 1; }
+    .orb__labeltext { font-size: clamp(0.95rem, 0.66rem + 2vw, 1.25rem); }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.orbs');
+  if (root) {
+    const stage = root.querySelector<HTMLElement>('.orbs__stage');
+    const orbs = Array.from(root.querySelectorAll<HTMLButtonElement>('.orb'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('.orb-panel'));
+    const hint = root.querySelector<HTMLElement>('.orbs__hint');
+    root.classList.add('is-enhanced');
+
+    let pinned: string | null = null;
+
+    function show(key: string) {
+      for (const o of orbs) o.setAttribute('aria-expanded', String(o.dataset.pillar === key));
+      for (const p of panels) {
+        const on = p.dataset.pillar === key;
+        p.hidden = !on;
+        if (on) {
+          p.classList.remove('is-in');
+          void p.offsetWidth;
+          p.classList.add('is-in');
+        }
+      }
+      if (hint) hint.hidden = true;
+    }
+
+    function collapse() {
+      if (pinned) { show(pinned); return; }
+      for (const o of orbs) o.setAttribute('aria-expanded', 'false');
+      for (const p of panels) p.hidden = true;
+      if (hint) hint.hidden = false;
+    }
+
+    orbs.forEach((o) => {
+      const key = o.dataset.pillar!;
+      o.addEventListener('mouseenter', () => show(key));
+      o.addEventListener('focus', () => show(key));
+      o.addEventListener('click', () => {
+        if (pinned === key) { pinned = null; collapse(); }
+        else { pinned = key; show(key); }
+      });
+    });
+
+    stage?.addEventListener('mouseleave', () => collapse());
+    root.addEventListener('focusout', (e) => {
+      if (!root.contains(e.relatedTarget as Node | null)) collapse();
+    });
+
+    // Start with the first area already open; collapses to the hint on leave.
+    show(orbs[0]?.dataset.pillar ?? '');
+
+    // --- Bounce physics: each blob drifts and reflects off the stage edges ---
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (stage && !prefersReduced) {
+      const stageEl = stage;
+      const seeds = [
+        { vx: 0.55, vy: 0.42 },
+        { vx: -0.5, vy: 0.52 },
+        { vx: 0.48, vy: -0.5 },
+      ];
+      const st = orbs.map((_, i) => ({
+        dx: 0, dy: 0,
+        vx: seeds[i % seeds.length].vx,
+        vy: seeds[i % seeds.length].vy,
+        paused: false,
+        minX: 0, maxX: 0, minY: 0, maxY: 0,
+      }));
+
+      function measure() {
+        const sw = stageEl.clientWidth;
+        const sh = stageEl.clientHeight;
+        orbs.forEach((o, i) => {
+          const bw = o.offsetWidth;
+          const bh = o.offsetHeight;
+          const bl = o.offsetLeft; // base position (unaffected by transform)
+          const bt = o.offsetTop;
+          const s = st[i];
+          s.minX = -bl;
+          s.maxX = sw - bw - bl;
+          s.minY = -bt;
+          s.maxY = sh - bh - bt;
+          s.dx = Math.min(s.maxX, Math.max(s.minX, s.dx));
+          s.dy = Math.min(s.maxY, Math.max(s.minY, s.dy));
+        });
+      }
+      measure();
+      window.addEventListener('resize', measure);
+
+      // Freeze a blob while it's hovered/focused so it's catchable & readable.
+      orbs.forEach((o, i) => {
+        o.addEventListener('mouseenter', () => { st[i].paused = true; });
+        o.addEventListener('mouseleave', () => { st[i].paused = false; });
+        o.addEventListener('focus', () => { st[i].paused = true; });
+        o.addEventListener('blur', () => { st[i].paused = false; });
+      });
+
+      let last = 0;
+      const tick = (now: number) => {
+        // Delta-time (in ~60fps frame units), clamped so a backgrounded tab
+        // resuming doesn't teleport the blobs across the stage.
+        const dt = last ? Math.min((now - last) / 16.667, 4) : 1;
+        last = now;
+        for (let i = 0; i < orbs.length; i++) {
+          const s = st[i];
+          if (!s.paused) {
+            if (s.maxX > s.minX) {
+              s.dx += s.vx * dt;
+              if (s.dx <= s.minX) { s.dx = s.minX; s.vx = Math.abs(s.vx); }
+              else if (s.dx >= s.maxX) { s.dx = s.maxX; s.vx = -Math.abs(s.vx); }
+            }
+            if (s.maxY > s.minY) {
+              s.dy += s.vy * dt;
+              if (s.dy <= s.minY) { s.dy = s.minY; s.vy = Math.abs(s.vy); }
+              else if (s.dy >= s.maxY) { s.dy = s.maxY; s.vy = -Math.abs(s.vy); }
+            }
+          }
+          orbs[i].style.transform = `translate(${s.dx.toFixed(1)}px, ${s.dy.toFixed(1)}px)`;
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+  }
+</script>

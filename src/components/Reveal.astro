@@ -1,0 +1,32 @@
+---
+// Scroll-reveal wrapper. Adds the `data-reveal` hook the motion script watches.
+// Content stays visible if JS is off or reduced motion is requested.
+// Any extra attributes (id, aria-*, etc.) are forwarded to the root element.
+interface Props {
+  as?: string;
+  /** Reveal direction: '' (up, default), 'left', 'right', or 'scale'. */
+  variant?: '' | 'left' | 'right' | 'scale';
+  /** Stagger delay in milliseconds. */
+  delay?: number;
+  class?: string;
+  /** Optional inline style; merged with the reveal delay. */
+  style?: string;
+  [key: string]: unknown;
+}
+const {
+  as = 'div',
+  variant = '',
+  delay = 0,
+  class: className = '',
+  style: styleProp,
+  ...rest
+} = Astro.props;
+const Tag = as as any;
+const delayStyle = delay ? `--reveal-delay:${delay}ms` : '';
+const style =
+  [delayStyle, styleProp].filter(Boolean).join(';') || undefined;
+---
+
+<Tag data-reveal={variant || true} class={className} style={style} {...rest}>
+  <slot />
+</Tag>

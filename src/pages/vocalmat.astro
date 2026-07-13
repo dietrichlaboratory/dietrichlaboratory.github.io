@@ -1,0 +1,215 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PublicationItem from '../components/PublicationItem.astro';
+import Reveal from '../components/Reveal.astro';
+import Icon from '../components/Icon.astro';
+
+const methods = (await getCollection('publications'))
+  .map((p) => p.data)
+  .filter((p) => p.pillar === 'methods')
+  // Keep the diphtheria-toxin tool paper on the Publications page, but not on
+  // the VocalMat tab (it isn't USV-related) — per the content review.
+  .filter((p) => !/diphtheria/i.test(p.title))
+  .sort((a, b) => b.year - a.year);
+
+// VocalMat and SqueakOut titles both mention "ultrasonic vocalizations", so
+// match the VocalMat paper by its DOI to avoid accidentally picking SqueakOut.
+const vocalmat = methods.find((p) => p.doi === '10.7554/eLife.59161');
+const squeakout = methods.find((p) => p.title.startsWith('SqueakOut'));
+
+const features = [
+  { title: 'Computer vision', body: 'Detects and segments ultrasonic vocalizations directly from spectrogram images.' },
+  { title: 'Machine learning', body: 'Classifies call types automatically, reducing manual annotation.' },
+  { title: 'Open source', body: 'Freely available for the research community to use and extend.' },
+  { title: 'Reproducible', body: 'A consistent, quantitative pipeline for analyzing mouse USVs.' },
+];
+
+const links = {
+  github: 'https://github.com/ahof1704/VocalMat',
+  data: 'https://osf.io/bk2uj/overview',
+};
+---
+
+<BaseLayout
+  title="VocalMat"
+  description="VocalMat — an open-source tool for analyzing mouse ultrasonic vocalizations using computer vision and machine learning."
+>
+  <PageHeader
+    eyebrow="Open-source tool"
+    title="VocalMat"
+    intro="Analysis of mouse ultrasonic vocalizations using computer vision and machine learning — an open-source pipeline built in the lab."
+    backdrop="wave"
+  />
+
+  <section class="section">
+    <div class="container vm-intro">
+      <div class="vm-intro__text stack">
+        <Reveal as="p" class="lead" style="max-width:48ch">
+          Mice communicate with ultrasonic vocalizations (USVs) that carry rich
+          information about social and developmental state. VocalMat turns raw
+          audio into quantitative data by treating each vocalization as an image
+          and applying computer vision and machine learning to detect and
+          classify calls.
+        </Reveal>
+        <Reveal as="p" class="measure" delay={60}>
+          We use it to study mother–infant communication and how vocal behavior
+          develops — a core method behind the lab’s developmental neuroscience
+          projects. The tool is open source so other labs can analyze their own
+          recordings with a consistent, reproducible pipeline.
+        </Reveal>
+
+        <Reveal class="vm-links" delay={120}>
+          {vocalmat?.url && (
+            <a class="btn btn--primary" href={vocalmat.url} target="_blank" rel="noopener">
+              Read the paper <Icon name="external" />
+            </a>
+          )}
+          {
+            links.github ? (
+              <a class="btn btn--ghost" href={links.github} target="_blank" rel="noopener">
+                <Icon name="github" /> GitHub
+              </a>
+            ) : (
+              <button type="button" class="btn btn--ghost is-disabled" disabled>
+                <Icon name="github" /> GitHub
+                <span class="visually-hidden">(link coming soon)</span>
+              </button>
+            )
+          }
+          {
+            links.data ? (
+              <a class="btn btn--ghost" href={links.data} target="_blank" rel="noopener">
+                Data (OSF) <Icon name="arrow-right" />
+              </a>
+            ) : (
+              <button type="button" class="btn btn--ghost is-disabled" disabled>
+                Data (OSF)
+                <span class="visually-hidden">(link coming soon)</span>
+              </button>
+            )
+          }
+        </Reveal>
+      </div>
+
+      <Reveal class="vm-figure" variant="right" delay={80}>
+        <figure class="vm-figure__frame">
+          <img
+            src="/images/research/usv-sonogram.jpg"
+            alt="Spectrogram (sonogram) of mouse ultrasonic vocalizations, colored by VocalMat's detected calls."
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+        <p class="vm-figure__cap muted">
+          Spectrogram (sonogram) of USVs — VocalMat detects and classifies each call.
+        </p>
+      </Reveal>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head">
+        <Reveal as="p" class="eyebrow">How it works</Reveal>
+        <Reveal as="h2" delay={60}>From audio to insight</Reveal>
+      </div>
+      <div class="vm-features">
+        {
+          features.map((f, i) => (
+            <Reveal class="vm-feature card" delay={i * 80}>
+              <h3>{f.title}</h3>
+              <p>{f.body}</p>
+            </Reveal>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    squeakout && (
+      <section class="section">
+        <div class="container">
+          <div class="vm-squeak">
+            <Reveal class="vm-squeak__text">
+              <p class="eyebrow">Also from the lab</p>
+              <h2>SqueakOut</h2>
+              <p class="measure">
+                A companion tool for autoencoder-based segmentation of mouse
+                ultrasonic vocalizations. Currently available as a preprint.
+              </p>
+              {squeakout.url && (
+                <a class="link-arrow" href={squeakout.url} target="_blank" rel="noopener">
+                  Read the SqueakOut preprint <Icon name="arrow-right" />
+                </a>
+              )}
+            </Reveal>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head">
+        <Reveal as="h2">Methods &amp; tools publications</Reveal>
+      </div>
+      <Reveal>
+        <ul class="pub-list card" style="padding:0.5rem 1.5rem">
+          {methods.map((pub) => <PublicationItem pub={pub} />)}
+        </ul>
+      </Reveal>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .vm-intro {
+    display: grid;
+    gap: clamp(1.75rem, 1rem + 3vw, 3.5rem);
+    align-items: center;
+  }
+  @media (min-width: 52rem) {
+    .vm-intro { grid-template-columns: 1fr 1fr; }
+  }
+  .vm-links { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.5rem; }
+  .btn.is-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: transparent;
+  }
+  .btn.is-disabled:hover { transform: none; }
+  .vm-figure__frame {
+    margin: 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    background: var(--yale-blue-900);
+  }
+  .vm-figure__frame img { width: 100%; height: auto; display: block; }
+  .vm-figure__cap { margin-top: 0.7rem; font-size: 0.85rem; }
+
+  .vm-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: clamp(1rem, 0.6rem + 1.5vw, 1.5rem);
+  }
+  .vm-feature { padding: 1.4rem 1.5rem; }
+  .vm-feature h3 {
+    font-size: var(--step-1);
+    color: var(--yale-blue);
+    margin-bottom: 0.4rem;
+  }
+  .vm-feature p { color: var(--ink-2); font-size: 0.95rem; }
+
+  .vm-squeak__text { max-width: 44rem; }
+  .vm-squeak h2 { font-size: var(--step-2); margin: 0.3rem 0 0.6rem; }
+  .vm-squeak p { color: var(--ink-2); }
+
+  .pub-list { list-style: none; }
+  .pub-list :global(.pub:last-child) { border-bottom: none; }
+</style>

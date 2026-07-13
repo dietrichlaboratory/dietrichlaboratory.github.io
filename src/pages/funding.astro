@@ -1,0 +1,348 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Reveal from '../components/Reveal.astro';
+import Icon from '../components/Icon.astro';
+import { CONTACT } from '../data/site';
+
+// Donor-facing "areas of impact" — grounded in the lab's real research pillars.
+const impactAreas = [
+  { title: 'Early-life brain development', body: 'How the infant and adolescent brain builds the circuits for social behavior, attachment, and emotional health.' },
+  { title: 'Body, brain & food allergy', body: 'How the immune system and body signal to the brain — reframing food allergy as a systems problem, not only an immune one.' },
+  { title: 'Comparative biology of the armadillo', body: 'A one-of-a-kind research colony probing embryonic diapause and the origins of individuality from a single genome.' },
+  { title: 'Trainees & open tools', body: 'Training the next generation of scientists and building open-source tools, like VocalMat, that the whole field can use.' },
+];
+
+// Add logo files under /public/images/funders/ and set `logo` to display them.
+// Only funders with confirmed (awarded) support are named.
+const funders = [
+  { name: 'National Institutes of Health (NIH)' },
+  { name: 'Food Allergy Science Initiative (FASI)' },
+  { name: 'Chan Zuckerberg Initiative (CZI)' },
+  { name: 'Yale School of Medicine' },
+];
+
+// Current (active) grants, from the PI's certified Current & Pending Support.
+const currentGrants = [
+  {
+    title: 'Regulation of infant social behaviors and learning by the zona incerta',
+    funder: 'NIH · NIMH',
+    id: 'R01 MH142603',
+    role: 'PI',
+    years: '2026–2031',
+  },
+  {
+    title: 'Dysregulation of the opioid system in early-life adversity',
+    funder: 'NIH · NIMH',
+    id: 'R01 MH130825',
+    role: 'MPI (with A. Kaffman)',
+    years: '2022–2027',
+  },
+  {
+    title: 'Cellular and circuit investigation of age-dependent social behaviors',
+    funder: 'NIH · NIMH',
+    id: 'R21 MH138997',
+    role: 'PI',
+    years: '2025–2027',
+  },
+  {
+    title: 'Neuro-immune mechanisms involved in behavioral and physiological responses to food allergens',
+    funder: 'Food Allergy Science Initiative',
+    id: '2024-FASI-NEURO-YM24316',
+    role: 'PI',
+    years: '2024–2027',
+  },
+  {
+    title: 'Robert T. McCloskey Scholar — endowed award',
+    funder: 'Yale School of Medicine',
+    id: '',
+    role: 'Endowed Scholar',
+    years: '2024–2027',
+  },
+];
+
+// Completed grants — the lab's funding history (from the PI's CV).
+const pastGrants = [
+  { funder: 'NIH · NIMH', title: 'R01 — Hypothalamic control of neonatal vocalizations', role: 'PI', years: '2020–2025' },
+  { funder: 'FASI / FARE / Broad Institute Consortium', title: 'Untangling neuroimmune communication in food allergy (with R. Medzhitov)', role: 'PI', years: '2020–2024' },
+  { funder: 'Smith Family Foundation', title: 'Odyssey Award — opioid-producing neurons in infant attachment', role: 'PI', years: '2021–2024' },
+  { funder: 'Chan Zuckerberg Initiative', title: 'Single-cell analysis of inflammation (with N. Palm & A. Wang)', role: 'Co-PI', years: '2020–2023' },
+  { funder: 'HHMI', title: 'Gilliam Fellowship for Advanced Studies', role: 'Advisor', years: '2019–2022' },
+  { funder: 'Foundation for Prader-Willi Research', title: 'Development of hunger neurons in Prader-Willi syndrome', role: 'PI', years: '2019–2021' },
+  { funder: 'CAPES (Brazil)', title: 'Neuroendocrine mechanisms of metabolism and behavior', role: 'Co-PI', years: '2018–2021' },
+  { funder: 'Yale School of Medicine', title: 'Reginald & Michiko Spector Award in Neuroscience', role: 'PI', years: '2019–2020' },
+  { funder: 'NIH · NIDDK', title: 'R01 — Intracellular dynamics of AgRP neurons across metabolic states', role: 'PI', years: '2015–2020' },
+  { funder: 'CAPES (Brazil)', title: 'Interoceptive hypothalamic neurons and cognition', role: 'PI', years: '2015–2019' },
+  { funder: 'Whitehall Foundation', title: 'Dissecting interoceptive circuits for cognition', role: 'PI', years: '2015–2018' },
+  { funder: 'Yale Diabetes Research Center (P30)', title: 'AgRP neurons in exercise-induced adaptation (pilot)', role: 'PI', years: '2016–2018' },
+  { funder: 'Brain & Behavior Research Foundation', title: 'NARSAD Young Investigator Award — AgRP neurons & dopamine', role: 'PI', years: '2015–2017' },
+  { funder: 'Charles H. Hood Foundation', title: 'Child Health Research Award — hypothalamic circuits in development', role: 'PI', years: '2015–2017' },
+  { funder: 'Yale Center for Clinical Investigation', title: 'Scholar Award — AgRP neurons in anorexia nervosa', role: 'PI', years: '2014–2016' },
+  { funder: 'CNPq (Brazil)', title: 'Hypothalamic regulation of cognition & behavior', role: 'PI', years: '2013–2016' },
+  { funder: 'Modern Diet & Physiology Research Center', title: 'Circuit linking homeostatic-need neurons to brainstem (pilot)', role: 'Co-PI', years: '2016–2017' },
+];
+---
+
+<BaseLayout
+  title="Funding"
+  description="Funding and acknowledgments for the Dietrich Lab at Yale School of Medicine."
+>
+  <PageHeader
+    eyebrow="Support"
+    title="Support the lab"
+    intro="Philanthropy helps us pursue bold, early-stage science, support talented trainees, and build the tools our research depends on."
+    backdrop="cells"
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <Reveal as="p" class="eyebrow">Why give</Reveal>
+        <Reveal as="h2" delay={60}>What your support makes possible</Reveal>
+      </div>
+      <Reveal as="p" class="lead measure" delay={80}>
+        Federal grants fund specific, established projects. Philanthropy does
+        something different: it lets us chase bold, early-stage ideas before they
+        are fundable, support talented trainees, and sustain the tools and colony
+        infrastructure our science depends on. A gift is an investment in
+        curiosity-driven discovery about how the brain and body shape behavior
+        and health across life.
+      </Reveal>
+
+      <div class="impact-grid">
+        {
+          impactAreas.map((a, i) => (
+            <Reveal class="impact card" delay={i * 70}>
+              <h3>{a.title}</h3>
+              <p>{a.body}</p>
+            </Reveal>
+          ))
+        }
+      </div>
+
+      <Reveal class="give">
+        <div class="give__inner">
+          <div>
+            <h2>Make a gift</h2>
+            <p class="measure">
+              Gifts to the Dietrich Lab are made through Yale School of Medicine
+              and directly support trainees, pilot projects, and research tools.
+              To talk about how your support can make a difference, get in touch.
+            </p>
+          </div>
+          <a
+            class="btn btn--primary"
+            href={`mailto:${CONTACT.email}?subject=${encodeURIComponent('Supporting the Dietrich Lab')}`}
+          >
+            <Icon name="mail" /> Contact Marcelo about giving
+          </a>
+        </div>
+      </Reveal>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head">
+        <Reveal as="p" class="eyebrow">Supported by</Reveal>
+        <Reveal as="h2" delay={60}>Funding partners</Reveal>
+      </div>
+
+      <div class="funders-grid">
+        {
+          funders.map((f, i) => (
+            <Reveal class="funder" delay={i * 60}>
+              <p class="funder__name">{f.name}</p>
+            </Reveal>
+          ))
+        }
+      </div>
+
+      <Reveal class="grants-block">
+        <h2>Current grants &amp; awards</h2>
+        <p class="measure muted">
+          The lab’s work is supported by federal grants from the National
+          Institutes of Health, foundation awards, and institutional support
+          from Yale School of Medicine.
+        </p>
+        <ul class="grants-list">
+          {
+            currentGrants.map((g) => (
+              <li class="grant">
+                <p class="grant__title">{g.title}</p>
+                <p class="grant__meta">
+                  <span class="grant__funder">{g.funder}</span>
+                  {g.id && <span class="grant__id">{g.id}</span>}
+                  <span class="grant__role">{g.role}</span>
+                  <span class="grant__years">{g.years}</span>
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="grants-foot muted">
+          Dr. Dietrich also contributes to an NIH/NIA Program Project on FGF21,
+          healthspan, and longevity (P01 AG051459).
+        </p>
+      </Reveal>
+
+      <Reveal class="past-block">
+        <h2>Past support</h2>
+        <p class="measure muted">
+          Completed grants and awards that have supported the lab over the years.
+        </p>
+        <ul class="past-list">
+          {
+            pastGrants.map((g) => (
+              <li class="past">
+                <p class="past__head">
+                  <span class="past__funder">{g.funder}</span>
+                  <span class="past__years">{g.years}</span>
+                </p>
+                <p class="past__title">{g.title} · {g.role}</p>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="past-foot muted">
+          Awarded and declined: European Research Council (ERC) Starting Grant (2021).
+        </p>
+      </Reveal>
+
+      <Reveal class="thanks">
+        <p>
+          We are grateful to every agency, foundation, and donor whose support
+          makes this science possible — and especially to the donors behind
+          the <strong>Robert T. McCloskey Scholar</strong> fund and
+          the <strong>Reginald &amp; Michiko Spector Award in Neuroscience</strong>,
+          whose generous gifts to Yale School of Medicine directly support the lab.
+        </p>
+      </Reveal>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Donor "areas of impact" cards + giving call-to-action. */
+  .impact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: clamp(1rem, 0.6rem + 1.5vw, 1.5rem);
+    margin-top: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  }
+  .impact { padding: 1.4rem 1.5rem; }
+  .impact h3 { font-size: var(--step-1); color: var(--yale-blue); margin-bottom: 0.4rem; }
+  .impact p { color: var(--ink-2); font-size: 0.95rem; line-height: 1.5; }
+
+  .give { margin-top: clamp(2rem, 1.5rem + 2vw, 3.5rem); }
+  .give__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+    background: var(--yale-blue);
+    color: #eaf1f9;
+    border-radius: var(--radius-lg);
+  }
+  .give__inner h2 { color: #fff; font-size: var(--step-2); margin-bottom: 0.5rem; }
+  .give__inner p { color: #cfe0f2; }
+  .give__inner .btn--primary { background: #fff; color: var(--yale-blue); }
+
+  .funders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+    gap: clamp(1rem, 0.6rem + 1.5vw, 1.5rem);
+  }
+  .funder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 6rem;
+    padding: 1.5rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--dur-2) var(--ease), transform var(--dur-2) var(--ease-out),
+      box-shadow var(--dur-2) var(--ease);
+  }
+  .funder:hover { border-color: var(--line-2); transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+  .funder__name {
+    font-family: var(--font-serif);
+    font-size: var(--step-0);
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
+  .grants-block { margin-top: clamp(2.5rem, 2rem + 2vw, 4rem); }
+  .grants-block h2 { font-size: var(--step-2); margin-bottom: 0.6rem; }
+  .grants-list {
+    list-style: none;
+    margin: 1.4rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .grant {
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent-blue);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .grant__title { font-weight: 600; color: var(--ink); line-height: 1.35; }
+  .grant__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    margin-top: 0.45rem;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+  .grant__funder { color: var(--accent-blue); font-weight: 600; }
+  .grant__id { font-family: var(--font-mono); font-size: 0.8rem; }
+  .grants-foot { margin-top: 1.2rem; font-size: 0.9rem; }
+
+  .past-block { margin-top: clamp(2.5rem, 2rem + 2vw, 4rem); }
+  .past-block h2 { font-size: var(--step-2); margin-bottom: 0.6rem; }
+  .past-list {
+    list-style: none;
+    margin: 1.4rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    gap: 0.85rem 1.5rem;
+  }
+  .past {
+    padding: 0.75rem 0 0.85rem;
+    border-top: 1px solid var(--line);
+  }
+  .past__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  .past__funder { font-weight: 600; color: var(--ink); }
+  .past__years {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+  .past__title { font-size: 0.88rem; color: var(--ink-2); margin-top: 0.2rem; line-height: 1.4; }
+  .past-foot { margin-top: 1.4rem; font-size: 0.88rem; font-style: italic; }
+
+  .thanks {
+    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    background: var(--surface-tint);
+    border-left: 4px solid var(--accent-blue);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .thanks p { font-family: var(--font-serif); font-size: var(--step-1); color: var(--ink); font-style: italic; }
+</style>

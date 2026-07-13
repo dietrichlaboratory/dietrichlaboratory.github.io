@@ -1,0 +1,41 @@
+---
+import SciBackdrop from './SciBackdrop.astro';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+  backdrop?: 'neurons' | 'wave' | 'cells';
+}
+const { eyebrow, title, intro, backdrop = 'neurons' } = Astro.props;
+---
+
+<header class="page-header">
+  <div class="page-header__bg" data-parallax data-parallax-speed="0.08">
+    <SciBackdrop variant={backdrop} />
+  </div>
+  <div class="container page-header__inner">
+    {eyebrow && <p class="eyebrow" data-reveal>{eyebrow}</p>}
+    <h1 data-reveal style="--reveal-delay:60ms">{title}</h1>
+    {intro && <p class="page-header__intro lead" data-reveal style="--reveal-delay:140ms">{intro}</p>}
+    <slot />
+  </div>
+</header>
+
+<style>
+  .page-header {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: #eaf1f9;
+    background:
+      radial-gradient(120% 120% at 85% -20%, #0a4a8f 0%, transparent 55%),
+      linear-gradient(160deg, var(--yale-blue-900), var(--yale-blue));
+    padding-block: clamp(3.5rem, 2.5rem + 6vw, 6.5rem);
+  }
+  .page-header__bg { position: absolute; inset: -15% 0 0 0; z-index: -1; opacity: 0.8; }
+  .page-header__inner { position: relative; max-width: 52rem; }
+  .page-header .eyebrow { color: var(--eyebrow-on-navy); }
+  .page-header h1 { color: #fff; font-size: var(--step-4); margin-top: 0.5rem; }
+  .page-header__intro { margin-top: 1.2rem; color: #cfe0f2; max-width: 46ch; }
+</style>

@@ -1,0 +1,191 @@
+---
+import Icon from './Icon.astro';
+
+interface Member {
+  name: string;
+  role: string;
+  group?: string;
+  bio?: string;
+  photo?: string;
+  email?: string;
+  links?: Record<string, string | undefined>;
+}
+interface Props {
+  member: Member;
+  featured?: boolean;
+}
+const { member, featured = false } = Astro.props;
+
+// Initials + a soft, deterministic tint for members without a portrait — a
+// warmer, more intentional fallback than a "no photo" placeholder box.
+const cleanName = member.name.split(',')[0].trim();
+const nameWords = cleanName.split(/\s+/).filter((w) => !/^[A-Z]\.$/.test(w));
+const initials = (
+  (nameWords[0]?.[0] ?? '') +
+  (nameWords.length > 1 ? nameWords[nameWords.length - 1][0] : '')
+).toUpperCase();
+const AVATAR_TINTS = [
+  { bg: '#e8eef6', fg: '#294c74' },
+  { bg: '#e7efee', fg: '#2f5d55' },
+  { bg: '#eceef4', fg: '#3b4a6b' },
+  { bg: '#eef1ec', fg: '#4c5a3b' },
+  { bg: '#f1edea', fg: '#6a4d3d' },
+];
+let hash = 0;
+for (const ch of member.name) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+const tint = AVATAR_TINTS[hash % AVATAR_TINTS.length];
+
+const socialDefs = [
+  { key: 'scholar', icon: 'scholar', label: 'Google Scholar' },
+  { key: 'orcid', icon: 'orcid', label: 'ORCID' },
+  { key: 'linkedin', icon: 'linkedin', label: 'LinkedIn' },
+  { key: 'yale', icon: 'link', label: 'Yale profile' },
+  { key: 'website', icon: 'link', label: 'Website' },
+  { key: 'github', icon: 'github', label: 'GitHub' },
+  { key: 'twitter', icon: 'twitter', label: 'X (Twitter)' },
+  { key: 'bluesky', icon: 'bluesky', label: 'Bluesky' },
+];
+const links = (member.links ?? {}) as Record<string, string | undefined>;
+const socials = socialDefs.filter((s) => links[s.key]);
+---
+
+<article class:list={['tcard', { 'tcard--featured': featured }]}>
+  <div class="tcard__photo">
+    {
+      member.photo ? (
+        <img src={member.photo} alt={`Portrait of ${member.name}`} width="480" height="600" loading="lazy" />
+      ) : (
+        <div class="tcard__initials" style={`--av-bg:${tint.bg};--av-fg:${tint.fg}`}>
+          <span aria-hidden="true">{initials}</span>
+        </div>
+      )
+    }
+  </div>
+  <div class="tcard__body">
+    <h3 class="tcard__name">{member.name}</h3>
+    <p class="tcard__role">{member.role}</p>
+    {member.bio && <p class="tcard__bio">{member.bio}</p>}
+
+    {
+      (socials.length > 0 || member.email) && (
+        <ul class="tcard__links">
+          {member.email && (
+            <li>
+              <a href={`mailto:${member.email}`} aria-label={`Email ${member.name}`}>
+                <Icon name="mail" label="Email" />
+              </a>
+            </li>
+          )}
+          {socials.map((s) => (
+            <li>
+              <a href={links[s.key]} target="_blank" rel="noopener" aria-label={`${member.name} — ${s.label}`}>
+                <Icon name={s.icon} label={s.label} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .tcard {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform var(--dur-2) var(--ease-out),
+      box-shadow var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease);
+  }
+  .tcard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+    border-color: var(--line-2);
+  }
+  /* All team photos rendered greyscale for a consistent look. */
+  .tcard__photo { background: var(--surface-tint); filter: grayscale(1); }
+  .tcard__photo img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4 / 5; }
+  .tcard__initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background: var(--av-bg, var(--surface-tint));
+    color: var(--av-fg, var(--yale-blue));
+  }
+  .tcard__initials span {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(2.4rem, 1.4rem + 5vw, 3.4rem);
+    letter-spacing: 0.03em;
+  }
+  .tcard__body {
+    padding: 1.1rem 1.2rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+  }
+  .tcard__name { font-size: var(--step-1); font-weight: 600; }
+  .tcard__role {
+    color: var(--accent-blue);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .tcard__bio {
+    color: var(--ink-2);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin-top: 0.2rem;
+  }
+  .tcard__links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.7rem 0 0;
+    padding: 0;
+  }
+  .tcard__links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--ink-2);
+    transition: color var(--dur-2) var(--ease),
+      border-color var(--dur-2) var(--ease), background-color var(--dur-2) var(--ease);
+  }
+  .tcard__links a:hover {
+    color: var(--yale-blue);
+    border-color: var(--accent-blue);
+    background: color-mix(in srgb, var(--accent-blue) 8%, transparent);
+  }
+
+  /* PI / featured: wider, side-by-side on larger screens */
+  @media (min-width: 40rem) {
+    /* The featured (PI) card is used outside a grid, so it just goes horizontal. */
+    .tcard--featured { flex-direction: row; }
+    .tcard--featured .tcard__photo { flex: 0 0 40%; max-width: 22rem; }
+    .tcard--featured .tcard__photo img { height: 100%; }
+    .tcard--featured .tcard__photo .tcard__initials { height: 100%; aspect-ratio: auto; }
+    .tcard--featured .tcard__body { justify-content: center; padding: 2rem; }
+    .tcard--featured .tcard__name { font-size: var(--step-2); }
+  }
+
+  /* On phones the tall PI portrait pushes the rest of the team below the fold —
+     cap its height so visitors reach the wider group faster. */
+  @media (max-width: 40rem) {
+    .tcard--featured .tcard__photo img {
+      aspect-ratio: auto;
+      height: 16rem;
+      object-position: center 28%;
+    }
+  }
+</style>

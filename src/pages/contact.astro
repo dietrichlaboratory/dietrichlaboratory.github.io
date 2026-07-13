@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Reveal from '../components/Reveal.astro';
+import Icon from '../components/Icon.astro';
+import { ADDRESS, CONTACT, SOCIAL } from '../data/site';
+
+// Lab coordinates (Brady Memorial Laboratory, 310 Cedar Street, New Haven CT).
+// OpenStreetMap's export/embed iframe needs no API key and — unlike Google's
+// `output=embed`, which Google blocks from framing — renders reliably.
+const LAT = 41.3023256;
+const LON = -72.9340548;
+const dLat = 0.0026;
+const dLon = 0.0042;
+const mapEmbed = `https://www.openstreetmap.org/export/embed.html?bbox=${LON - dLon}%2C${LAT - dLat}%2C${LON + dLon}%2C${LAT + dLat}&layer=mapnik&marker=${LAT}%2C${LON}`;
+const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+  ADDRESS.mapQuery
+)}`;
+
+const profiles = [
+  { label: 'Google Scholar', icon: 'scholar', href: SOCIAL.scholar },
+  { label: 'ORCID', icon: 'orcid', href: SOCIAL.orcid },
+  { label: 'Wu Tsai Institute', icon: 'link', href: SOCIAL.wti },
+  { label: 'Yale profile', icon: 'link', href: SOCIAL.yale },
+  { label: 'LinkedIn', icon: 'linkedin', href: SOCIAL.linkedin },
+];
+---
+
+<BaseLayout
+  title="Contact"
+  description="Contact the Dietrich Lab at Yale School of Medicine — address, email, and profile links."
+>
+  <PageHeader
+    eyebrow="Contact"
+    title="Get in touch"
+    intro="Find us at Yale School of Medicine in New Haven, or reach out by email."
+    backdrop="neurons"
+  />
+
+  <section class="section">
+    <div class="container contact-grid">
+      <div class="contact-info stack">
+        <Reveal class="contact-block">
+          <h2 class="micro-head">Address</h2>
+          <address>
+            <Icon name="map-pin" size="1.3rem" />
+            <span>
+              <strong>{ADDRESS.institution}</strong><br />
+              {ADDRESS.building}<br />
+              {ADDRESS.street}<br />
+              {ADDRESS.city}, {ADDRESS.state} {ADDRESS.zip}
+            </span>
+          </address>
+          <a class="link-arrow" href={mapLink} target="_blank" rel="noopener">
+            Open in Google Maps <Icon name="arrow-right" />
+          </a>
+        </Reveal>
+
+        <Reveal class="contact-block" delay={80}>
+          <h2 class="micro-head">Email &amp; phone</h2>
+          <a class="contact-email link-arrow" href={`mailto:${CONTACT.email}`}>
+            <Icon name="mail" /> {CONTACT.email}
+          </a>
+          {CONTACT.phone && (
+            <p class="contact-phone">
+              <a href={`tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`}>{CONTACT.phone}</a>
+            </p>
+          )}
+        </Reveal>
+
+        <Reveal class="contact-block" delay={140}>
+          <h2 class="micro-head">Profiles</h2>
+          <ul class="profiles">
+            {
+              profiles.map((p) => (
+                <li>
+                  {p.href ? (
+                    <a href={p.href} target="_blank" rel="noopener">
+                      <Icon name={p.icon} /> {p.label}
+                    </a>
+                  ) : (
+                    <span class="profile-missing">
+                      <Icon name={p.icon} /> {p.label}
+                      <em class="muted"> — [PLACEHOLDER: add URL]</em>
+                    </span>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+        </Reveal>
+      </div>
+
+      <Reveal class="contact-map" variant="right" delay={80}>
+        <iframe
+          title="Map showing the Dietrich Lab location at Yale School of Medicine"
+          src={mapEmbed}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+      </Reveal>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-grid {
+    display: grid;
+    gap: clamp(1.75rem, 1rem + 3vw, 3rem);
+    align-items: start;
+  }
+  @media (min-width: 50rem) {
+    .contact-grid { grid-template-columns: 0.9fr 1.1fr; }
+  }
+  .contact-block + .contact-block { margin-top: 2rem; }
+  .contact-block .micro-head { margin-bottom: 0.8rem; }
+
+  address {
+    font-style: normal;
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    line-height: 1.7;
+    color: var(--ink-2);
+    margin-bottom: 0.8rem;
+  }
+  address :global(svg) { color: var(--accent-blue); flex: none; margin-top: 0.2rem; }
+  address strong { color: var(--ink); }
+
+  .contact-email { font-size: var(--step-1); }
+  .contact-phone { margin-top: 0.6rem; }
+  .contact-phone a { color: var(--ink-2); text-decoration: none; }
+  .contact-phone a:hover { color: var(--yale-blue); }
+
+  .profiles { list-style: none; padding: 0; display: grid; gap: 0.7rem; }
+  .profiles a,
+  .profile-missing {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--ink-2);
+  }
+  .profiles a { color: var(--link); font-weight: 500; }
+  .profiles a:hover { color: var(--yale-blue); }
+  .profiles :global(svg) { color: var(--accent-blue); flex: none; }
+  .profile-missing { color: var(--ink-3); }
+
+  .contact-map {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    min-height: 24rem;
+    height: 100%;
+  }
+  .contact-map iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 24rem;
+    border: 0;
+    display: block;
+    /* Recolor the map to the site's cool blue-grey palette. */
+    filter: grayscale(1) sepia(0.55) hue-rotate(170deg) saturate(1.1)
+      brightness(1.03) contrast(0.95);
+  }
+</style>

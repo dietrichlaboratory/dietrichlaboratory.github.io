@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<BaseLayout title="Page not found" noindex>
+  <section class="section notfound">
+    <div class="container center">
+      <p class="notfound__code">404</p>
+      <h1>This page wandered off</h1>
+      <p class="lead mx-auto center">
+        The page you’re looking for doesn’t exist or may have moved.
+      </p>
+      <div class="notfound__cta">
+        <a class="btn btn--primary" href="/">Back to home <Icon name="arrow-right" /></a>
+        <a class="btn btn--ghost" href="/research">Explore the research</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound { padding-block: clamp(4rem, 3rem + 6vw, 8rem); }
+  .notfound__code {
+    font-family: var(--font-serif);
+    font-size: clamp(4rem, 3rem + 8vw, 9rem);
+    font-weight: 600;
+    line-height: 1;
+    color: color-mix(in srgb, var(--yale-blue) 22%, var(--bg));
+  }
+  .notfound h1 { margin-top: 0.5rem; }
+  .notfound .lead { margin-top: 1rem; }
+  .notfound__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+</style>

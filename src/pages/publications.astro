@@ -1,0 +1,214 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PublicationItem from '../components/PublicationItem.astro';
+import Reveal from '../components/Reveal.astro';
+import { PILLAR_SHORT } from '../data/site';
+
+const pubs = (await getCollection('publications'))
+  .map((p) => p.data)
+  .sort((a, b) => b.year - a.year); // reverse-chronological by default
+
+// Build the filter set from pillars that actually appear, in a fixed order.
+const order = ['developmental', 'physiology', 'comparative', 'methods', 'review'];
+const present = new Set(pubs.map((p) => p.pillar));
+const filters = [
+  { key: 'all', label: 'All' },
+  ...order
+    .filter((k) => present.has(k))
+    .map((k) => ({ key: k, label: PILLAR_SHORT[k] ?? k })),
+];
+---
+
+<BaseLayout
+  title="Publications"
+  description="Peer-reviewed publications from the Dietrich Lab, filterable by research pillar."
+>
+  <PageHeader
+    eyebrow="Publications"
+    title="Publications"
+    intro="Peer-reviewed research from the lab. Filter by research pillar or browse the full list, newest first."
+    backdrop="wave"
+  />
+
+  <section class="section">
+    <div class="container container--prose" style="max-width:56rem">
+      <div class="pub-controls">
+        <div class="pub-filters" role="group" aria-label="Filter publications by research area">
+          {
+            filters.map((f, i) => (
+              <button
+                type="button"
+                class="pub-filter"
+                data-filter={f.key}
+                aria-pressed={i === 0 ? 'true' : 'false'}
+              >
+                {f.label}
+              </button>
+            ))
+          }
+        </div>
+        <button type="button" class="pub-sort" data-order="desc">
+          <span class="pub-sort__label">Newest first</span>
+        </button>
+      </div>
+
+      <p class="pub-count" aria-live="polite" data-total={pubs.length}>
+        Showing all {pubs.length} publications
+      </p>
+
+      <Reveal>
+        <ul class="pub-list" id="pub-list">
+          {pubs.map((pub) => <PublicationItem pub={pub} />)}
+        </ul>
+      </Reveal>
+
+      <p class="pub-empty" hidden>No publications match this filter.</p>
+
+      <p class="pub-note muted">
+        This is a curated, PubMed-verified selection of the lab’s publications,
+        updated over time.
+      </p>
+    </div>
+  </section>
+
+<style>
+  .pub-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .pub-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .pub-filter,
+  .pub-sort {
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: color var(--dur-1) var(--ease),
+      background-color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+  }
+  .pub-filter:hover,
+  .pub-sort:hover { border-color: var(--accent-blue); color: var(--yale-blue); }
+  .pub-filter[aria-pressed='true'] {
+    background: var(--yale-blue);
+    border-color: var(--yale-blue);
+    color: #fff;
+  }
+  .pub-sort::before {
+    content: '↓ ';
+    font-weight: 700;
+  }
+  .pub-sort[data-order='asc']::before { content: '↑ '; }
+
+  .pub-count {
+    font-size: 0.9rem;
+    color: var(--ink-3);
+    margin-bottom: 0.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .pub-list { list-style: none; padding: 0; margin: 0; }
+  .pub-list :global(.pub:last-child) { border-bottom: none; }
+  .pub-empty {
+    padding: 2rem 0;
+    color: var(--ink-3);
+    font-style: italic;
+  }
+  .pub-note {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1.2rem;
+  }
+  .pub-note code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--surface-tint);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+  }
+</style>
+
+<script>
+  const list = document.getElementById('pub-list');
+  const filterButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('.pub-filter')
+  );
+  const sortButton = document.querySelector<HTMLButtonElement>('.pub-sort');
+  const sortLabel = sortButton?.querySelector('.pub-sort__label');
+  const count = document.querySelector<HTMLElement>('.pub-count');
+  const empty = document.querySelector<HTMLElement>('.pub-empty');
+  const items = list
+    ? Array.from(list.querySelectorAll<HTMLElement>('.pub'))
+    : [];
+  const total = items.length;
+
+  let activeFilter = 'all';
+  let currentOrder: 'asc' | 'desc' = 'desc';
+
+  function apply() {
+    let visible = 0;
+    for (const item of items) {
+      const match = activeFilter === 'all' || item.dataset.pillar === activeFilter;
+      item.hidden = !match;
+      if (match) visible++;
+    }
+    if (count) {
+      const label =
+        activeFilter === 'all'
+          ? `Showing all ${visible} publications`
+          : `Showing ${visible} of ${total} publications`;
+      const dir = currentOrder === 'desc' ? 'newest first' : 'oldest first';
+      count.textContent = `${label}, ${dir}`;
+    }
+    if (empty) empty.hidden = visible !== 0;
+  }
+
+  function setFilter(key: string) {
+    activeFilter = key;
+    for (const btn of filterButtons) {
+      btn.setAttribute('aria-pressed', String(btn.dataset.filter === key));
+    }
+    apply();
+  }
+
+  filterButtons.forEach((btn) => {
+    btn.addEventListener('click', () => setFilter(btn.dataset.filter ?? 'all'));
+  });
+
+  function sortBy(order: 'asc' | 'desc') {
+    if (!list) return;
+    const sorted = [...items].sort((a, b) => {
+      const ya = Number(a.dataset.year ?? 0);
+      const yb = Number(b.dataset.year ?? 0);
+      return order === 'desc' ? yb - ya : ya - yb;
+    });
+    sorted.forEach((el) => list.appendChild(el));
+  }
+
+  sortButton?.addEventListener('click', () => {
+    const next: 'asc' | 'desc' = sortButton.dataset.order === 'desc' ? 'asc' : 'desc';
+    sortButton.dataset.order = next;
+    currentOrder = next;
+    if (sortLabel) sortLabel.textContent = next === 'desc' ? 'Newest first' : 'Oldest first';
+    sortBy(next);
+    apply(); // refresh the aria-live count so the reorder is announced
+  });
+
+  // Preselect a filter from ?filter= (used by links from the Research page).
+  const param = new URLSearchParams(window.location.search).get('filter');
+  if (param && filterButtons.some((b) => b.dataset.filter === param)) {
+    setFilter(param);
+  }
+</script>
+
+</BaseLayout>

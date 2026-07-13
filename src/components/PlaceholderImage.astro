@@ -1,0 +1,37 @@
+---
+// Elegant, correctly-sized labeled placeholder standing in for a real asset.
+// Swap for Astro's <Image> once you drop real files into src/assets. The
+// [PLACEHOLDER IMAGE: ...] marker is emitted as an HTML comment so it is easy
+// to find in the built output, and is also listed in CONTENT-TODO.md.
+interface Props {
+  label: string;
+  /** Suggested dimensions, e.g. "1600×900". */
+  dims?: string;
+  /** CSS aspect-ratio value, e.g. "16 / 9", "4 / 3", "1 / 1". */
+  ratio?: string;
+  duotone?: boolean;
+  class?: string;
+}
+const {
+  label,
+  dims,
+  ratio = '16 / 9',
+  duotone = false,
+  class: className = '',
+} = Astro.props;
+const marker = `[PLACEHOLDER IMAGE: ${label}${dims ? `, ${dims}` : ''}]`;
+---
+
+<figure
+  class:list={['ph', { 'ph--duotone': duotone }, className]}
+  style={`--ph-ratio:${ratio}`}
+  role="img"
+  aria-label={`Placeholder image: ${label}`}
+>
+  <!-- {marker} -->
+  <figcaption class="ph__label">
+    <strong>Placeholder image</strong>
+    {label}
+    {dims && <><br /><span class="muted">{dims}</span></>}
+  </figcaption>
+</figure>

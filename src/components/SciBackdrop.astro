@@ -1,0 +1,109 @@
+---
+// Decorative scientific SVG backdrops (pure vector — no image assets needed).
+// Variants echo the lab's real imagery: neural circuits, fiber-photometry /
+// sonogram traces, and confocal-style cell fields. Purely decorative.
+interface Props {
+  variant?: 'neurons' | 'wave' | 'cells';
+  class?: string;
+}
+const { variant = 'neurons', class: className = '' } = Astro.props;
+
+// Fixed (deterministic) node + edge layout for the neural-circuit variant.
+const nodes: [number, number, number][] = [
+  [90, 120, 5], [260, 70, 3], [420, 160, 6], [560, 90, 3], [700, 200, 4],
+  [860, 110, 5], [1010, 180, 3], [1140, 90, 4], [150, 300, 3], [340, 360, 5],
+  [520, 300, 3], [690, 380, 6], [880, 320, 4], [1050, 380, 3], [1170, 300, 5],
+  [100, 520, 4], [300, 560, 3], [470, 500, 5], [660, 560, 3], [840, 520, 6],
+  [1020, 560, 3], [1160, 500, 4],
+];
+const edges: [number, number][] = [
+  [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7],
+  [0, 8], [8, 9], [2, 9], [9, 10], [10, 11], [4, 11], [11, 12], [12, 13], [6, 13], [13, 14], [7, 14],
+  [8, 15], [15, 16], [9, 17], [16, 17], [17, 18], [11, 18], [18, 19], [12, 19], [19, 20], [13, 20], [20, 21], [14, 21],
+];
+---
+
+<div class:list={['sci-backdrop', className]} aria-hidden="true">
+  {variant === 'neurons' && (
+    <svg viewBox="0 0 1240 640" preserveAspectRatio="xMidYMid slice" role="presentation">
+      <g class="sci-edges">
+        {edges.map(([a, b]) => (
+          <line x1={nodes[a][0]} y1={nodes[a][1]} x2={nodes[b][0]} y2={nodes[b][1]} />
+        ))}
+      </g>
+      <g class="sci-nodes">
+        {nodes.map(([x, y, r]) => (
+          <>
+            <circle class="sci-halo" cx={x} cy={y} r={r * 3.2} />
+            <circle class="sci-dot" cx={x} cy={y} r={r} />
+          </>
+        ))}
+      </g>
+    </svg>
+  )}
+
+  {variant === 'wave' && (
+    <svg viewBox="0 0 1240 320" preserveAspectRatio="none" role="presentation">
+      <path
+        class="sci-trace-fill"
+        d="M0 220 C 90 210 120 120 180 130 C 230 138 250 214 300 216 C 360 218 380 60 440 70 C 500 80 505 205 560 208 C 620 211 640 150 700 158 C 760 166 770 30 840 44 C 905 57 915 200 980 205 C 1040 210 1060 120 1120 128 C 1175 135 1200 205 1240 208 L 1240 320 L 0 320 Z"
+      />
+      <path
+        class="sci-trace"
+        d="M0 220 C 90 210 120 120 180 130 C 230 138 250 214 300 216 C 360 218 380 60 440 70 C 500 80 505 205 560 208 C 620 211 640 150 700 158 C 760 166 770 30 840 44 C 905 57 915 200 980 205 C 1040 210 1060 120 1120 128 C 1175 135 1200 205 1240 208"
+      />
+    </svg>
+  )}
+
+  {variant === 'cells' && (
+    <svg viewBox="0 0 1240 640" preserveAspectRatio="xMidYMid slice" role="presentation">
+      <g class="sci-cells">
+        <circle cx="180" cy="180" r="120" /><circle cx="180" cy="180" r="52" class="nuc" />
+        <circle cx="520" cy="120" r="90" /><circle cx="520" cy="120" r="38" class="nuc" />
+        <circle cx="900" cy="220" r="140" /><circle cx="900" cy="220" r="60" class="nuc" />
+        <circle cx="330" cy="470" r="105" /><circle cx="330" cy="470" r="44" class="nuc" />
+        <circle cx="700" cy="500" r="85" /><circle cx="700" cy="500" r="34" class="nuc" />
+        <circle cx="1080" cy="480" r="115" /><circle cx="1080" cy="480" r="48" class="nuc" />
+        <circle cx="1150" cy="120" r="70" /><circle cx="1150" cy="120" r="28" class="nuc" />
+      </g>
+    </svg>
+  )}
+</div>
+
+<style>
+  .sci-backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .sci-backdrop svg { width: 100%; height: 100%; }
+
+  /* Neurons */
+  .sci-edges line {
+    stroke: var(--accent-sky);
+    stroke-width: 1;
+    opacity: 0.28;
+  }
+  .sci-dot { fill: #eaf3ff; opacity: 0.9; }
+  .sci-halo { fill: var(--accent-sky); opacity: 0.12; }
+
+  /* Wave / photometry trace */
+  .sci-trace {
+    fill: none;
+    stroke: var(--accent-sky);
+    stroke-width: 2.5;
+    opacity: 0.6;
+  }
+  .sci-trace-fill { fill: var(--accent-sky); opacity: 0.1; }
+
+  /* Cells */
+  .sci-cells circle {
+    fill: var(--accent-sky);
+    opacity: 0.08;
+    stroke: var(--accent-sky);
+    stroke-opacity: 0.18;
+    stroke-width: 1.5;
+  }
+  .sci-cells .nuc { fill: #eaf3ff; opacity: 0.16; stroke: none; }
+</style>

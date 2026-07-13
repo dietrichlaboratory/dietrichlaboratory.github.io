@@ -1,0 +1,182 @@
+---
+// Homepage "What we study" — three static, soft 3-D gradient blobs, one per
+// research pillar (no animation). Each blob reveals a few example questions on
+// hover / focus / tap; an "Explore →" link in the reveal goes to the Research
+// page section.
+interface Pillar {
+  key: string;
+  short: string;
+  title?: string;
+  accent: string;
+  href: string;
+  examples?: string[];
+}
+interface Props {
+  pillars: Pillar[];
+}
+const { pillars } = Astro.props;
+---
+
+<div class="blobs">
+  {
+    pillars.map((p) => (
+      <div class="blob-col" style={`--accent:${p.accent}`}>
+        <button
+          class="blob"
+          type="button"
+          aria-expanded="false"
+          aria-controls={`reveal-${p.key}`}
+        >
+          <span class="blob__label">{p.short}</span>
+        </button>
+        <div class="blob-col__reveal" id={`reveal-${p.key}`}>
+          <div class="blob-col__reveal-inner">
+            {p.examples && p.examples.length > 0 && (
+              <ul class="blob-col__list">
+                {p.examples.slice(0, 3).map((ex) => (
+                  <li>{ex}</li>
+                ))}
+              </ul>
+            )}
+            <a class="blob-col__more" href={p.href}>
+              Explore {p.title ?? p.short} →
+            </a>
+          </div>
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .blobs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: clamp(1.75rem, 1rem + 3vw, 3.25rem);
+    align-items: start;
+    max-width: 62rem;
+    margin-inline: auto;
+    padding-top: clamp(1rem, 1rem + 1vw, 2rem);
+  }
+  .blob-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Blob is a disclosure toggle */
+  .blob {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    width: clamp(9rem, 21vw, 12rem);
+    aspect-ratio: 1;
+    border-radius: 46% 54% 57% 43% / 52% 46% 54% 48%;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 1rem;
+    background: radial-gradient(
+      120% 120% at 30% 25%,
+      color-mix(in srgb, var(--accent) 24%, #fff) 0%,
+      var(--accent) 78%
+    );
+    box-shadow:
+      0 18px 40px -18px color-mix(in srgb, var(--accent) 70%, transparent),
+      inset 0 2px 6px rgba(255, 255, 255, 0.35);
+    transition:
+      transform var(--dur-2) var(--ease-out),
+      box-shadow var(--dur-2) var(--ease);
+  }
+  .blob:hover,
+  .blob:focus-visible {
+    transform: translateY(-5px);
+    box-shadow:
+      0 26px 50px -18px color-mix(in srgb, var(--accent) 78%, transparent),
+      inset 0 2px 6px rgba(255, 255, 255, 0.4);
+  }
+  .blob:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .blob__label {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: var(--step-1);
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+  }
+
+  /* Reveal — collapsed by default, opens on hover / focus / tap */
+  .blob-col__reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    width: 100%;
+    max-width: 21rem;
+    opacity: 0;
+    transition:
+      grid-template-rows var(--dur-3, 0.35s) var(--ease),
+      opacity var(--dur-3, 0.35s) var(--ease);
+  }
+  .blob-col__reveal-inner { overflow: hidden; min-height: 0; }
+  .blob-col:hover .blob-col__reveal,
+  .blob-col:focus-within .blob-col__reveal,
+  .blob-col.is-open .blob-col__reveal {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .blob-col__list {
+    list-style: none;
+    margin: 1.3rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+    text-align: left;
+  }
+  .blob-col__list li {
+    position: relative;
+    padding-left: 1.15rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+  .blob-col__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .blob-col__more {
+    display: inline-block;
+    margin-top: 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .blob-col__more:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blob,
+    .blob-col__reveal { transition: none; }
+    .blob:hover, .blob:focus-visible { transform: none; }
+  }
+</style>
+
+<script>
+  // Click/tap toggles the reveal (and keeps aria-expanded in sync). Hover and
+  // keyboard focus reveal it via CSS; this adds a persistent open state for
+  // touch users and pointer clicks.
+  document.querySelectorAll<HTMLButtonElement>('.blobs .blob').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const col = btn.closest('.blob-col');
+      if (!col) return;
+      const open = col.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+</script>

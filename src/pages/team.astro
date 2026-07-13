@@ -1,0 +1,160 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import TeamCard from '../components/TeamCard.astro';
+import Reveal from '../components/Reveal.astro';
+import Icon from '../components/Icon.astro';
+import alumni from '../data/alumni.json';
+
+const members = (await getCollection('team'))
+  .map((m) => ({ id: m.id, ...m.data }))
+  .sort((a, b) => a.order - b.order);
+
+const pi = members.find((m) => m.group === 'pi');
+const rest = members.filter((m) => m.group !== 'pi');
+
+// Display order + labels for the non-PI groups.
+const groupOrder: { key: string; label: string }[] = [
+  { key: 'postdoc', label: 'Postdoctoral Researchers' },
+  { key: 'staff', label: 'Postdocs, Research Scientists, & Staff' },
+  { key: 'grad', label: 'Graduate Students' },
+  { key: 'student', label: 'Students & Trainees' },
+];
+const groups = groupOrder
+  .map((g) => ({ ...g, people: rest.filter((m) => m.group === g.key) }))
+  .filter((g) => g.people.length > 0);
+---
+
+<BaseLayout
+  title="People"
+  description="The people of the Dietrich Lab — Laboratory of Physiology of Behavior at Yale School of Medicine."
+>
+  <PageHeader
+    eyebrow="People"
+    title="The people behind the science"
+    intro="A collaborative group of scientists studying how the brain develops to control behavior and physiology."
+    backdrop="cells"
+  />
+
+  <section class="section">
+    <div class="container">
+      {pi && (
+        <div class="team-pi">
+          <Reveal as="h2" class="team-group__title">Principal Investigator</Reveal>
+          <Reveal>
+            <TeamCard member={pi} featured />
+          </Reveal>
+        </div>
+      )}
+
+      {
+        groups.map((g, gi) => (
+          <div class="team-group">
+            <Reveal as="h2" class="team-group__title">{g.label}</Reveal>
+            <div class="team-grid">
+              {g.people.map((m, i) => (
+                <Reveal delay={i * 70}>
+                  <TeamCard member={m} />
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+
+      <div class="team-group">
+        <Reveal as="h2" class="team-group__title">Alumni</Reveal>
+        <Reveal as="p" class="alumni-intro measure muted">
+          The lab has been shaped by a remarkable group of trainees. We are proud
+          of where they have gone.
+        </Reveal>
+        <ul class="alumni-list">
+          {
+            alumni.map((a) => (
+              <li class="alumnus">
+                <p class="alumnus__name">{a.name}</p>
+                <p class="alumnus__role">{a.role} · {a.years}</p>
+                {a.now && <p class="alumnus__now">{a.now}</p>}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <Reveal class="team-recruit">
+        <div class="team-recruit__inner">
+          <div>
+            <p class="eyebrow">Join us</p>
+            <h2>We’re recruiting</h2>
+            <p class="measure">
+              The lab is actively looking for postdocs and students who are
+              excited about developmental neuroscience, body–brain physiology,
+              and comparative biology. If that’s you, we’d love to hear from you.
+            </p>
+          </div>
+          <a class="btn btn--primary" href="/join">
+            See open positions <Icon name="arrow-right" />
+          </a>
+        </div>
+      </Reveal>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .team-pi { margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem); }
+  .team-pi .team-group__title { margin-bottom: 1.5rem; }
+
+  .team-group { margin-top: clamp(2.5rem, 2rem + 2vw, 4rem); }
+  .team-group__title {
+    font-size: var(--step-2);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--line);
+  }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: clamp(1rem, 0.6rem + 1.5vw, 1.75rem);
+  }
+
+  /* Alumni — compact list rather than photo cards */
+  .alumni-intro { margin: -0.75rem 0 1.5rem; }
+  .alumni-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+  }
+  .alumnus {
+    padding: 0.9rem 1.05rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition: border-color var(--dur-2) var(--ease), transform var(--dur-2) var(--ease-out);
+  }
+  .alumnus:hover { border-color: var(--line-2); transform: translateY(-2px); }
+  .alumnus__name { font-weight: 600; color: var(--ink); }
+  .alumnus__role { font-size: 0.82rem; color: var(--ink-3); margin-top: 0.15rem; }
+  .alumnus__now { font-size: 0.88rem; color: var(--accent-blue); margin-top: 0.45rem; }
+
+  .team-recruit {
+    margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+  }
+  .team-recruit__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+    background: var(--surface-tint);
+    border: 1px solid var(--line-2);
+    border-radius: var(--radius-lg);
+  }
+  .team-recruit h2 { font-size: var(--step-2); margin: 0.4rem 0 0.6rem; }
+  .team-recruit p.measure { color: var(--ink-2); }
+</style>

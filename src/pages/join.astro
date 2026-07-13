@@ -1,0 +1,356 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Reveal from '../components/Reveal.astro';
+import Icon from '../components/Icon.astro';
+import { CONTACT } from '../data/site';
+
+// Current formal openings — live Yale postings (details verified from the posts).
+const openings = [
+  {
+    id: 'postdocs',
+    tag: 'Postdoc',
+    title: 'Postdoctoral Associate — Developmental & Systems Neuroscience',
+    body: 'Study how the infant brain learns about the social world, using fiber photometry, in vivo imaging, viral circuit tools, and behavior in mice. For scientists with (or completing) a PhD or MD/PhD in developmental, systems, or behavioral neuroscience.',
+    apply: 'dietrichlaboratory@gmail.com',
+    href: 'https://postdocs.yale.edu/posts/2026-06-26-postdoctoral-associate-in-developmental-neuroscience-dietrich-lab-yale-school-of',
+  },
+  {
+    id: 'postbac',
+    tag: 'Post-baccalaureate',
+    title: 'Postgraduate Associate',
+    body: 'A mentored, PhD-track position for recent graduates. Get hands-on training in tissue clearing, confocal microscopy, viral circuit manipulation, and behavioral assays, with structured guidance in scientific writing and preparing for graduate school.',
+    apply: 'marcelo.zimmer@yale.edu',
+    href: 'https://postdocs.yale.edu/posts/2025-12-23-postgraduate-associate-position-laboratory-of-physiology-and-behavior-dietrich-lab',
+  },
+];
+
+// Standing categories we welcome year-round, beyond the formal postings above.
+const roles = [
+  {
+    id: 'graduate-students',
+    title: 'Graduate students',
+    body: 'Yale PhD students interested in rotating are welcome. Reach out to talk about projects that fit your interests and program.',
+    cta: 'Get in touch to arrange a rotation.',
+  },
+  {
+    id: 'research-staff',
+    title: 'Undergraduates & research staff',
+    body: 'Motivated undergraduates and prospective research assistants who want hands-on experience in a collaborative lab are encouraged to inquire.',
+    cta: 'Tell us what you’d like to learn.',
+  },
+];
+
+const values = [
+  { title: 'Curiosity-driven', body: 'We chase surprising questions — even the ones that don’t fit neatly into a field.' },
+  { title: 'Rigorous & collaborative', body: 'Careful experiments, honest interpretation, and a genuinely supportive team.' },
+  { title: 'Technically ambitious', body: 'We build the tools we need, from viral circuit tools to open-source software.' },
+  { title: 'Developmental at heart', body: 'We think across the lifespan — behavior is something the brain builds over time.' },
+];
+---
+
+<BaseLayout
+  title="Join"
+  description="Join the Dietrich Lab — opportunities for postdocs, graduate students, and undergraduates at Yale School of Medicine."
+>
+  <PageHeader
+    eyebrow="Join the lab"
+    title="Come do science with us"
+    intro="We’re looking for curious, driven scientists who want to understand how the brain develops to control behavior and physiology."
+    backdrop="neurons"
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="join-paths">
+        <a class="join-path" href="#postdocs">
+          <span class="join-path__role">Postdoc</span>
+          <span class="join-path__meta">Open posting <Icon name="arrow-right" /></span>
+        </a>
+        <a class="join-path" href="#postbac">
+          <span class="join-path__role">Post-bac</span>
+          <span class="join-path__meta">Open posting <Icon name="arrow-right" /></span>
+        </a>
+        <a class="join-path" href="#graduate-students">
+          <span class="join-path__role">Graduate rotations</span>
+          <span class="join-path__meta">Rotate with us <Icon name="arrow-right" /></span>
+        </a>
+        <a class="join-path" href="#research-staff">
+          <span class="join-path__role">Staff &amp; undergrads</span>
+          <span class="join-path__meta">Get hands-on <Icon name="arrow-right" /></span>
+        </a>
+        <a class="join-path join-path--apply" href="#apply">
+          <span class="join-path__role">How to apply</span>
+          <span class="join-path__meta">What to send <Icon name="arrow-right" /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--prose">
+      <Reveal as="p" class="lead" style="max-width:52ch">
+        The Dietrich Lab is a collaborative, ambitious group at Yale School of
+        Medicine. We study early-life neural circuits, body–brain communication,
+        and individuality — and we care as much about how we work as about what
+        we discover.
+      </Reveal>
+      <Reveal as="p" class="measure" delay={60} style="margin-top:1.2rem;color:var(--ink-2)">
+        If you’re excited by developmental neuroscience, neuroimmunology, or
+        comparative biology and want to work with cutting-edge circuit and
+        imaging tools in a warm, rigorous environment, we would love to hear
+        from you.
+      </Reveal>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head center mx-auto">
+        <Reveal as="p" class="eyebrow">Meet the lab</Reveal>
+        <Reveal as="h2" delay={60}>A word from Marcelo</Reveal>
+        <Reveal as="p" class="lead mx-auto center" delay={120}>
+          On developmental neuroscience — and why mentoring the next generation
+          of scientists is at the heart of the lab.
+        </Reveal>
+      </div>
+      <Reveal class="pi-video">
+        <video controls preload="metadata" poster="/videos/dietrich-poster.jpg" playsinline>
+          <source src="/videos/dietrich-lab.mp4" type="video/mp4" />
+          Your browser doesn’t support embedded video.
+          <a href="/videos/dietrich-lab.mp4">Download the video</a>.
+        </video>
+      </Reveal>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <Reveal as="p" class="eyebrow">What it’s like</Reveal>
+        <Reveal as="h2" delay={60}>How we work</Reveal>
+      </div>
+      <div class="values-grid">
+        {
+          values.map((v, i) => (
+            <Reveal class="value card" delay={i * 70}>
+              <h3>{v.title}</h3>
+              <p>{v.body}</p>
+            </Reveal>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="open-positions">
+    <div class="container">
+      <div class="section-head">
+        <Reveal as="p" class="eyebrow">Who we’re looking for</Reveal>
+        <Reveal as="h2" delay={60}>Open positions</Reveal>
+        <Reveal as="p" class="lead" delay={120}>
+          We have open positions right now — and we welcome strong candidates
+          year-round, even when a specific role isn’t posted.
+        </Reveal>
+      </div>
+
+      <div class="openings">
+        {
+          openings.map((o, i) => (
+            <Reveal class="opening card" id={o.id} delay={i * 80}>
+              <div class="opening__text">
+                <span class="opening__tag">{o.tag}</span>
+                <h3>{o.title}</h3>
+                <p>{o.body}</p>
+              </div>
+              <div class="opening__actions">
+                <a class="btn btn--primary" href={o.href} target="_blank" rel="noopener">
+                  View posting &amp; apply <Icon name="external" />
+                </a>
+                <p class="opening__apply">
+                  Or email <a href={`mailto:${o.apply}`}>{o.apply}</a>
+                </p>
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+
+      <Reveal as="h3" class="roles-subhead">Other ways to join the lab</Reveal>
+      <div class="roles">
+        {
+          roles.map((r, i) => (
+            <Reveal class="role card" id={r.id} delay={i * 80}>
+              <h3>{r.title}</h3>
+              <p>{r.body}</p>
+              <p class="role__cta"><Icon name="arrow-right" /> {r.cta}</p>
+            </Reveal>
+          ))
+        }
+      </div>
+
+      <Reveal class="apply" id="apply">
+        <div class="apply__inner">
+          <div>
+            <h2>How to apply</h2>
+            <p class="measure">
+              For the posted positions above, apply using the contact listed in
+              each posting. For general or year-round inquiries,
+              email {CONTACT.email} and include:
+            </p>
+            <ul class="apply-list">
+              <li>A short note on why the lab’s work excites you and what you’d want to work on</li>
+              <li>Your CV</li>
+              <li>Postdocs: a brief research statement and contact details for 2–3 references</li>
+              <li>Students &amp; staff: your availability and any relevant coursework or lab experience</li>
+            </ul>
+          </div>
+          <a
+            class="btn btn--primary"
+            href={`mailto:${CONTACT.email}?subject=${encodeURIComponent('Joining the Dietrich Lab')}`}
+          >
+            <Icon name="mail" /> Email the lab
+          </a>
+        </div>
+      </Reveal>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Quick-path action band near the top of the page. */
+  .join-paths {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: clamp(0.75rem, 0.5rem + 1vw, 1rem);
+  }
+  .join-path {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    text-decoration: none;
+    transition: border-color var(--dur-2) var(--ease),
+      transform var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease);
+  }
+  .join-path:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-sm);
+  }
+  .join-path__role { font-weight: 600; color: var(--ink); font-size: var(--step-1); }
+  .join-path__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--accent-blue);
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  .join-path__meta :global(svg) { width: 1em; height: 1em; }
+  .join-path--apply { background: var(--yale-blue); border-color: var(--yale-blue); }
+  .join-path--apply .join-path__role { color: #fff; }
+  .join-path--apply .join-path__meta { color: #bcd8f5; }
+
+  #open-positions,
+  .opening,
+  .role,
+  .apply { scroll-margin-top: calc(var(--header-h) + 1.5rem); }
+
+  /* Current formal openings */
+  .openings {
+    display: grid;
+    gap: clamp(1rem, 0.6rem + 1.5vw, 1.5rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+  .opening {
+    display: flex;
+    flex-direction: column;
+    padding: 1.6rem 1.7rem;
+    border-left: 4px solid var(--accent-blue);
+  }
+  .opening__tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+  }
+  .opening h3 { font-size: var(--step-1); color: var(--ink); line-height: 1.3; }
+  .opening p { color: var(--ink-2); margin-top: 0.5rem; }
+  .opening__text { flex: 1; margin-bottom: 1.1rem; }
+  .opening__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+  }
+  .opening__apply { font-size: 0.88rem; color: var(--ink-3); margin: 0; }
+  .opening__apply a { color: var(--link); }
+  .roles-subhead { font-size: var(--step-1); color: var(--ink); margin-bottom: 1rem; }
+  .apply-list {
+    margin: 0.9rem 0 0;
+    padding-left: 1.1rem;
+    color: #cfe0f2;
+    display: grid;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .pi-video { max-width: 48rem; margin-inline: auto; }
+  .pi-video video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: block;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    background: #000;
+  }
+
+  .values-grid,
+  .roles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: clamp(1rem, 0.6rem + 1.5vw, 1.5rem);
+  }
+  .value { padding: 1.4rem 1.5rem; }
+  .value h3 { font-size: var(--step-1); color: var(--yale-blue); margin-bottom: 0.4rem; }
+  .value p { color: var(--ink-2); font-size: 0.95rem; }
+
+  .role { padding: 1.6rem 1.7rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .role h3 { font-size: var(--step-1); color: var(--ink); }
+  .role p { color: var(--ink-2); }
+  .role__cta {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent-blue);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .role__cta :global(svg) { flex: none; }
+
+  .apply { margin-top: clamp(2rem, 1.5rem + 2vw, 3.5rem); }
+  .apply__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+    background: var(--yale-blue);
+    color: #eaf1f9;
+    border-radius: var(--radius-lg);
+  }
+  .apply__inner h2 { color: #fff; font-size: var(--step-2); margin-bottom: 0.5rem; }
+  .apply__inner p { color: #cfe0f2; }
+  .apply__inner .btn--primary { background: #fff; color: var(--yale-blue); }
+</style>

@@ -1,0 +1,231 @@
+---
+import { NAV, SITE } from '../data/site';
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label={`${SITE.name} — home`}>
+      <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="19" fill="#00356b" />
+        <g stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round">
+          <circle cx="14" cy="14" r="2.4" fill="#fff" stroke="none" />
+          <circle cx="27" cy="12" r="1.8" fill="#9fc7ef" stroke="none" />
+          <circle cx="26" cy="27" r="2.2" fill="#fff" stroke="none" />
+          <circle cx="13" cy="27" r="1.6" fill="#fff" stroke="none" />
+          <path d="M14 14 L27 12 M14 14 L26 27 M27 12 L26 27 M14 14 L13 27 M13 27 L26 27" opacity="0.85" />
+        </g>
+      </svg>
+      <span class="brand__text">
+        <span class="brand__name">Dietrich Lab</span>
+        <span class="brand__sub">Physiology of Behavior</span>
+      </span>
+    </a>
+
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+    >
+      <span class="visually-hidden">Toggle navigation menu</span>
+      <svg class="nav-toggle__open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+        <line x1="3" y1="7" x2="21" y2="7" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="17" x2="21" y2="17" />
+      </svg>
+      <svg class="nav-toggle__close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+        <line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" />
+      </svg>
+    </button>
+
+    <nav id="site-nav" class="site-nav" aria-label="Primary">
+      <ul>
+        {
+          NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: var(--header-h);
+  }
+
+  /* Brand */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .brand__mark {
+    width: 2.3rem;
+    height: 2.3rem;
+    flex: none;
+    filter: drop-shadow(0 2px 4px rgba(1, 26, 52, 0.18));
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .brand:hover .brand__mark { transform: rotate(-6deg) scale(1.04); }
+  .brand__text { display: flex; flex-direction: column; line-height: 1.1; }
+  .brand__name {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+  .brand__sub {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* Nav */
+  .site-nav ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0;
+  }
+  .site-nav a {
+    display: block;
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    text-decoration: none;
+    position: relative;
+    transition: color var(--dur-1) var(--ease),
+      background-color var(--dur-1) var(--ease);
+  }
+  .site-nav a::after {
+    content: '';
+    position: absolute;
+    left: 0.8rem;
+    right: 0.8rem;
+    bottom: 0.28rem;
+    height: 2px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .site-nav a:hover { color: var(--yale-blue); background: color-mix(in srgb, var(--yale-blue) 6%, transparent); }
+  .site-nav a:hover::after { transform: scaleX(1); }
+  .site-nav a[aria-current='page'] { color: var(--yale-blue); font-weight: 600; }
+  .site-nav a[aria-current='page']::after { transform: scaleX(1); }
+
+  /* Mobile toggle button — hidden on desktop */
+  .nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--yale-blue);
+    cursor: pointer;
+  }
+  .nav-toggle__close { display: none; }
+
+  /* ---- Mobile layout ---- */
+  @media (max-width: 52rem) {
+    /* Without JS: menu is a visible stacked list. With JS it collapses. */
+    .nav-toggle { display: none; }
+    .site-nav ul { flex-wrap: wrap; gap: 0.1rem; justify-content: flex-start; }
+
+    :global(html.js) .nav-toggle { display: inline-flex; }
+    :global(html.js) .site-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      max-height: 0;
+      overflow: hidden;
+      visibility: hidden;
+      transition: max-height var(--dur-2) var(--ease),
+        visibility var(--dur-2) var(--ease);
+    }
+    :global(html.js) .site-header.is-open .site-nav {
+      max-height: 80vh;
+      overflow-y: auto;
+      visibility: visible;
+    }
+    :global(html.js) .site-header.is-open .nav-toggle__open { display: none; }
+    :global(html.js) .site-header.is-open .nav-toggle__close { display: block; }
+    .site-nav ul {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0.5rem var(--gutter) 1rem;
+    }
+    .site-nav a { padding: 0.75rem 0.6rem; font-size: 1.05rem; }
+    .site-nav a::after { display: none; }
+    .site-nav a[aria-current='page'] {
+      background: color-mix(in srgb, var(--yale-blue) 8%, transparent);
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector('.site-header');
+  const toggle = header?.querySelector<HTMLButtonElement>('.nav-toggle');
+  const nav = header?.querySelector('.site-nav');
+
+  function setOpen(open: boolean) {
+    const wasOpen = header?.classList.contains('is-open') ?? false;
+    header?.classList.toggle('is-open', open);
+    toggle?.setAttribute('aria-expanded', String(open));
+    // When closing a menu the user had opened, return focus to the toggle so
+    // keyboard focus order is preserved (only on the mobile overlay layout).
+    if (!open && wasOpen && toggle && getComputedStyle(toggle).display !== 'none') {
+      toggle.focus();
+    }
+  }
+
+  toggle?.addEventListener('click', () => {
+    setOpen(!header?.classList.contains('is-open'));
+  });
+
+  // Close when a link is chosen or Escape is pressed.
+  nav?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+</script>
