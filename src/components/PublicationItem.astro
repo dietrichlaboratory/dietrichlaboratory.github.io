@@ -35,11 +35,10 @@ const href = pub.url ?? (pub.doi ? `https://doi.org/${pub.doi}` : undefined);
 // Split authors so "Dietrich MO" can be emphasized without raw HTML injection.
 const authorParts = pub.authors.split('Dietrich MO');
 
-const roleLabel: Record<string, string> = {
-  first: 'First author',
-  senior: 'Senior author',
-  'co-senior': 'Co-senior author',
-};
+// Author-role badges (first / senior / co-senior) intentionally omitted — the
+// site is about the lab, not any one author. (The `role` field is kept in the
+// data/schema for filtering/other uses.)
+const roleLabel: Record<string, string> = {};
 const showRole = pub.role && roleLabel[pub.role];
 const typeLabel =
   pub.type && pub.type !== 'article' ? pub.type : undefined;
