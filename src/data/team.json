@@ -77,6 +77,13 @@
     "photo": "/images/team/jorge-santeli.jpg"
   },
   {
+    "id": "dianne-lee-ferguson",
+    "name": "Dianne-Lee Ferguson",
+    "role": "PhD Student (Rotation, INP)",
+    "group": "grad",
+    "order": 23
+  },
+  {
     "id": "nathan-lange",
     "name": "Nathan Lange",
     "role": "Undergraduate Researcher, Yale College",
@@ -95,11 +102,10 @@
     "links": { "linkedin": "https://www.linkedin.com/in/morgan-goldstrom-a5543033b/" }
   },
   {
-    "id": "gabriel-ioshpe",
-    "name": "Gabriel Ioshpe",
-    "role": "Visiting High-School Student",
+    "id": "duaa-eldirdiri",
+    "name": "Duaa Eldirdiri",
+    "role": "Undergraduate Researcher, Yale College · Neuroscience senior thesis",
     "group": "student",
-    "order": 32,
-    "photo": "/images/team/gabriel-ioshpe.jpg"
+    "order": 32
   }
 ]
