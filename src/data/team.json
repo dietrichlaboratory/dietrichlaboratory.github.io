@@ -81,7 +81,8 @@
     "name": "Dianne-Lee Ferguson",
     "role": "PhD Student (Rotation, INP)",
     "group": "grad",
-    "order": 23
+    "order": 23,
+    "photo": "/images/team/dianne-lee-ferguson.jpg"
   },
   {
     "id": "nathan-lange",
@@ -104,8 +105,9 @@
   {
     "id": "duaa-eldirdiri",
     "name": "Duaa Eldirdiri",
-    "role": "Undergraduate Researcher, Yale College · Neuroscience senior thesis",
+    "role": "Undergraduate Researcher, Yale College",
     "group": "student",
-    "order": 32
+    "order": 32,
+    "photo": "/images/team/duaa-eldirdiri.jpg"
   }
 ]
